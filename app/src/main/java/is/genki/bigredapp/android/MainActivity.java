@@ -19,10 +19,10 @@ import android.widget.Toast;
 import org.json.JSONArray;
 import org.json.JSONException;
 
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.Reader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
@@ -94,12 +94,14 @@ public class MainActivity extends ActionBarActivity {
             return rootView;
         }
 
-        // Uses AsyncTask to create a task away from the main UI thread. This task takes a
-        // URL string and uses it to create an HttpUrlConnection. Once the connection
-        // has been established, the AsyncTask downloads the contents of the webpage as
-        // an InputStream. Finally, the InputStream is converted into a string, which is
-        // displayed in the UI by the AsyncTask's onPostExecute method.
-        // https://developer.android.com/training/basics/network-ops/connecting.html#AsyncTask
+        /**
+         * https://developer.android.com/training/basics/network-ops/connecting.html#AsyncTask
+         * Uses AsyncTask to create a task away from the main UI thread. This task takes a
+         * URL string and uses it to create an HttpUrlConnection. Once the connection
+         * has been established, the AsyncTask downloads the contents of the webpage as
+         * an InputStream. Finally, the InputStream is converted into a string, which is
+         * then used to display a UI by the AsyncTask's onPostExecute method.
+         */
         private class DisplayDiningHallsTask extends AsyncTask<String, Void, String> {
             @Override
             protected String doInBackground(String... urls) {
@@ -116,8 +118,8 @@ public class MainActivity extends ActionBarActivity {
             // onPostExecute displays the results of the AsyncTask.
             @Override
             protected void onPostExecute(String result) {
-                // convert result to JSON, get string array
                 try {
+                    // convert result to JSONArray, then get diningHall string list
                     JSONArray jsonArray = new JSONArray(result);
                     ArrayList<String> diningList = new ArrayList<>();
                     int len = jsonArray.length();
@@ -135,15 +137,15 @@ public class MainActivity extends ActionBarActivity {
             }
         }
 
-        // Given a URL, establishes an HttpUrlConnection and retrieves
-        // the web page content as a InputStream, which it returns as
-        // a string.
-        // https://developer.android.com/training/basics/network-ops/connecting.html#download
+        /**
+         * https://developer.android.com/training/basics/network-ops/connecting.html#download
+         * @param myUrl: url string
+         * Establishes HttpUrlConnection, retrieves the web page content as a InputStream
+         * @return string of the InputStream
+         * @throws IOException
+         */
         private String downloadUrl(String myUrl) throws IOException {
             InputStream is = null;
-            // Only display the first 500 characters of the retrieved
-            // web page content.
-            int len = 500;
 
             try {
                 URL url = new URL(myUrl);
@@ -156,8 +158,14 @@ public class MainActivity extends ActionBarActivity {
                 conn.connect();
                 is = conn.getInputStream();
 
-                // Convert the InputStream into a string
-                return readIt(is, len);
+                BufferedReader reader = new BufferedReader(new InputStreamReader(is));
+                StringBuilder sb = new StringBuilder();
+
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    sb.append(line).append("\n");
+                }
+                return sb.toString();
             } finally {
                 // Makes sure that the InputStream is closed after the app is
                 // finished using it.
@@ -165,15 +173,6 @@ public class MainActivity extends ActionBarActivity {
                     is.close();
                 }
             }
-        }
-
-        // Reads an InputStream and converts it to a String.
-        // https://developer.android.com/training/basics/network-ops/connecting.html#stream
-        public String readIt(InputStream stream, int len) throws IOException {
-            Reader reader = new InputStreamReader(stream, "UTF-8");
-            char[] buffer = new char[len];
-            reader.read(buffer);
-            return new String(buffer);
         }
     }
 }
