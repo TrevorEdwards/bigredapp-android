@@ -9,11 +9,11 @@
 ## Objectives
 * 100% free as in beer (no monetization) and free as in speech (open source).
 * App: native Android, easy to use, good looking, minimal, clean.
-* Code: well-commented, easily to maintain.
+* Code: well-commented, easy to maintain.
 
-## Where's the App Store link?
-* It will be put up on the app store sometime this Spring Break (starting March 28th 2015).
-* Until then, see below.
+## Download?
+* It will be put up on the Google Play Store sometime this Spring Break (starting March 28th 2015).
+* Until then, please see _Up and Running_ below, and contribute! :)
 
 ## Current TODO
 * See the [issues page](https://github.com/genkimarshall/bigredapp-android/issues).
