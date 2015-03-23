@@ -9,9 +9,11 @@
 ## What
 * So, I'm making a much more minimal version of the app, native for Android, open source and free, all good things etc.
 * Right now it just displays the dining halls, and if you tap on the meal-plan ones, it tells you today's menu.
-* I am using [Kevin Chavez](https://github.com/mrkev)'s API [here](http://redapi-tious.rhcloud.com/).
+* I'm very open minded as to where this project can go, but I do want to keep it as simple to use as possible.
+* I am currently using [Kevin Chavez](https://github.com/mrkev)'s API [here](http://redapi-tious.rhcloud.com/).
 * If you are interested in talking in person, I try to go to all [meetings](https://github.com/OpenSourceCornell/Meeting-Summaries/) of [Open Source Cornell](https://www.facebook.com/groups/opensourcecornell).
 * If anyone wants to do the iOS version please say so and we can put them under the same umbrella!
+* Recent screenshots [here](https://imgur.com/a/iul7J)
 
 ## Where's the App Store link?
 * This project will always be 100% free as in beer and free as in speech.
@@ -37,8 +39,6 @@
 * Decide some format to filter what is currently open.
 * Add request to RedAPI to get all dining hall's information in one.
 
-## Recent Screenshots
-* See [here](https://imgur.com/a/iul7J) (Don't want to embed yet)
 
 ## Open Soure Cornell IRC
 * I try to remember to stay on the freenode irc at #opensourcecornell.
