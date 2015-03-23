@@ -14,12 +14,13 @@ import java.net.URL;
 
 /**
  * https://developer.android.com/training/basics/network-ops/connecting.html#AsyncTask
- * To use, instantiate GetRequest, passing in an overridden onPostExecute,
- * past in the context to setContext, then call execute on the url
+ * To use, instantiate GetRequest (while passing in an overridden onPostExecute),
+ * then call setContext (passing in the current context) on that object,
+ * then call execute (passing in the url) on that object
  */
 public class GetRequest extends AsyncTask<String, Void, String> {
 
-    public Context context;
+    private Context context;
 
     public GetRequest setContext(Context c) {
         this.context = c;
@@ -27,9 +28,9 @@ public class GetRequest extends AsyncTask<String, Void, String> {
     }
 
     /**
+     * @param urls currently only works with the first given.
+     * @return body of given url page
      * The async task to be done, returns the result to onPostExecute.
-     * @param urls, currently only works with the first given.
-     * @return string of json from given url.
      */
     @Override
     protected String doInBackground(String... urls) {
@@ -48,25 +49,23 @@ public class GetRequest extends AsyncTask<String, Void, String> {
     /**
      * https://developer.android.com/training/basics/network-ops/connecting.html#download
      * @param myUrl: url string
-     * Establishes HttpUrlConnection, retrieves the web page content as a InputStream
      * @return string of the InputStream
      * @throws IOException
+     * Establishes HttpUrlConnection, retrieves the web page content as a InputStream
      */
     private String downloadUrl(String myUrl) throws IOException {
-        InputStream is = null;
-
+        InputStream inputStream = null;
         try {
             URL url = new URL(myUrl);
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-            conn.setReadTimeout(10000 /* milliseconds */);
-            conn.setConnectTimeout(15000 /* milliseconds */);
+            conn.setReadTimeout(10000); // milliseconds
+            conn.setConnectTimeout(15000); // milliseconds
             conn.setRequestMethod("GET");
             conn.setDoInput(true);
-            // Starts the query
-            conn.connect();
-            is = conn.getInputStream();
+            conn.connect(); // starts the query
+            inputStream = conn.getInputStream();
 
-            BufferedReader reader = new BufferedReader(new InputStreamReader(is));
+            BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
             StringBuilder sb = new StringBuilder();
 
             String line;
@@ -75,10 +74,8 @@ public class GetRequest extends AsyncTask<String, Void, String> {
             }
             return sb.toString();
         } finally {
-            // Makes sure that the InputStream is closed after the app is
-            // finished using it.
-            if (is != null) {
-                is.close();
+            if (inputStream != null) {
+                inputStream.close();
             }
         }
     }

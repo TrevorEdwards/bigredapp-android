@@ -26,13 +26,12 @@ import java.util.ArrayList;
  */
 public class DiningListFragment extends Fragment {
 
-    private final String BASE_URL = "http://redapi-tious.rhcloud.com/dining";
-    private final String[] MEALS_LIST = {"Breakfast", "Lunch", "Dinner"};
+    private static final String BASE_URL = "http://redapi-tious.rhcloud.com/dining";
+    private static final String[] MEALS_LIST = {"Breakfast", "Lunch", "Dinner"};
     private ListView mListView;
     private ArrayList<String> mDiningList;
 
-    public DiningListFragment() {
-    }
+    public DiningListFragment() {}
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -48,24 +47,23 @@ public class DiningListFragment extends Fragment {
         };
         mListView.setOnItemClickListener(mListViewClickHandler);
 
-        getDininglist();
+        getDiningList();
 
         return rootView;
     }
 
     /**
      * https://developer.android.com/training/basics/network-ops/connecting.html#connection
-     * Makes a Toast if there is no internet.
-     * @param c the context within which to check connectivity.
-     * @return the device is connected.
+     * @return the device has a connection to the internet
+     * Makes a Toast if there is no connection
      */
-    private static boolean isConnected(Context c) {
-        ConnectivityManager connMgr = (ConnectivityManager) c.getSystemService(Context.CONNECTIVITY_SERVICE);
+    private boolean isConnected() {
+        ConnectivityManager connMgr = (ConnectivityManager) getActivity().getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
         if (networkInfo != null && networkInfo.isConnected()) {
             return true;
         } else {
-            Toast.makeText(c, "No Internet Connection", Toast.LENGTH_LONG).show();
+            Toast.makeText(getActivity(), "No Internet Connection", Toast.LENGTH_LONG).show();
             return false;
         }
     }
@@ -74,14 +72,14 @@ public class DiningListFragment extends Fragment {
      * Populates mDiningList with the String list of dining halls.
      * Sets mListView's adapter to this list.
      */
-    private void getDininglist() {
-        if (isConnected(getActivity())) {
+    private void getDiningList() {
+        if (isConnected()) {
             // Async Task to get the list of dining halls
             new GetRequest() {
                 @Override
                 protected void onPostExecute(String result) {
                     try {
-                        // convert result to JSONArray, then get diningHall string list
+                        // Convert result to JSONArray, then get diningHall string list
                         JSONArray jsonArray = new JSONArray(result);
                         mDiningList = new ArrayList<>();
                         int len = jsonArray.length();
@@ -102,15 +100,14 @@ public class DiningListFragment extends Fragment {
     }
 
     /**
+     * @param diningHall the dining hall's id as a String, as per RedAPI.
      * Displays today's menu for the given dining hall.
      * If there is none, displays a Toast saying so.
-     * @param diningHall the dining hall's id as a String, as per RedAPI.
      */
     private void handleMenuResponse(final String diningHall) {
-        // Do something in response to the click
         final String mealCsv = MEALS_LIST[0] + "," + MEALS_LIST[1] + "," + MEALS_LIST[2];
         final String url = BASE_URL + "/menu/" + diningHall + "/" + mealCsv + "/MEALS";
-        if (isConnected(getActivity())) {
+        if (isConnected()) {
             // Async Task to get the menu for a dining hall
             new GetRequest() {
                 @Override
