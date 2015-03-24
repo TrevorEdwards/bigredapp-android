@@ -139,30 +139,23 @@ public class DiningListFragment extends Fragment {
     }
 
     /**
-     * http://developer.android.com/training/improving-layouts/smooth-scrolling.html#ViewHolder
-     * Used in PrettyNameArrayAdapter
-     */
-    static class DiningListViewHolder {
-        TextView label;
-    }
-
-    /**
      * http://developer.android.com/guide/topics/ui/declaring-layout.html#FillingTheLayout
      * Returns a custom view for an array of strings on their way through the mListView adapter
      */
     public class PrettyNameArrayAdapter extends ArrayAdapter<String> {
-        int resource;
-        Pattern p = Pattern.compile("\\b([a-z])");
+
+        int mResource;
+        LayoutInflater mInflater;
+        final Pattern p = Pattern.compile("\\b([a-z])");
 
         public PrettyNameArrayAdapter(Context context, int res, ArrayList<String> items) {
             super(context, res, items);
-            this.resource = res;
+            this.mResource = res;
+            mInflater = LayoutInflater.from(context);
         }
 
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
-            LayoutInflater inflater = LayoutInflater.from(getContext());
-
             // Turns a RedAPI string id into a nice looking name
             // Temporary fix for https://github.com/genkimarshall/bigredapp-android/issues/2
             String name = getItem(position);
@@ -175,11 +168,23 @@ public class DiningListFragment extends Fragment {
             m.appendTail(sb);
 
             // http://developer.android.com/training/improving-layouts/smooth-scrolling.html#ViewHolder
-            DiningListViewHolder holder = new DiningListViewHolder();
-            holder.label = (TextView) inflater.inflate(this.resource, parent, false);
+            // http://lucasr.org/2012/04/05/performance-tips-for-androids-listview/
+            DiningListViewHolder holder;
+            if (convertView == null) {
+                convertView = mInflater.inflate(this.mResource, parent, false);
+                holder = new DiningListViewHolder();
+                holder.label = (TextView) convertView;
+                convertView.setTag(holder);
+            } else {
+                holder = (DiningListViewHolder) convertView.getTag();
+            }
             holder.label.setText(sb.toString());
+            return convertView;
+        }
 
-            return holder.label;
+        // http://developer.android.com/training/improving-layouts/smooth-scrolling.html#ViewHolder
+        class DiningListViewHolder {
+            TextView label;
         }
     }
 }
