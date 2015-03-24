@@ -138,6 +138,18 @@ public class DiningListFragment extends Fragment {
         }
     }
 
+    /**
+     * http://developer.android.com/training/improving-layouts/smooth-scrolling.html#ViewHolder
+     * Used in PrettyNameArrayAdapter
+     */
+    static class DiningListViewHolder {
+        TextView label;
+    }
+
+    /**
+     * http://developer.android.com/guide/topics/ui/declaring-layout.html#FillingTheLayout
+     * Returns a custom view for an array of strings on their way through the mListView adapter
+     */
     public class PrettyNameArrayAdapter extends ArrayAdapter<String> {
         int resource;
         Pattern p = Pattern.compile("\\b([a-z])");
@@ -150,9 +162,10 @@ public class DiningListFragment extends Fragment {
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
             LayoutInflater inflater = LayoutInflater.from(getContext());
-            TextView label = (TextView) inflater.inflate(this.resource, parent, false);
-            String name = getItem(position);
 
+            // Turns a RedAPI string id into a nice looking name
+            // Temporary fix for https://github.com/genkimarshall/bigredapp-android/issues/2
+            String name = getItem(position);
             name = name.replace("_", " ");
             Matcher m = p.matcher(name);
             StringBuffer sb = new StringBuffer();
@@ -161,9 +174,12 @@ public class DiningListFragment extends Fragment {
             }
             m.appendTail(sb);
 
-            label.setText(sb.toString());
+            // http://developer.android.com/training/improving-layouts/smooth-scrolling.html#ViewHolder
+            DiningListViewHolder holder = new DiningListViewHolder();
+            holder.label = (TextView) inflater.inflate(this.resource, parent, false);
+            holder.label.setText(sb.toString());
 
-            return label;
+            return holder.label;
         }
     }
 }
