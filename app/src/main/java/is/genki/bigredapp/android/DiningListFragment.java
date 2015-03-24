@@ -12,6 +12,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import org.json.JSONArray;
@@ -19,6 +20,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Fragment containing a ListView of dining halls.
@@ -88,7 +91,7 @@ public class DiningListFragment extends Fragment {
                         }
 
                         // http://developer.android.com/guide/topics/ui/declaring-layout.html#AdapterViews
-                        ArrayAdapter<String> adapter = new ArrayAdapter<>(getActivity(),
+                        ArrayAdapter<String> adapter = new PrettyNameArrayAdapter(getActivity(),
                                 android.R.layout.simple_list_item_1, mDiningList);
                         mListView.setAdapter(adapter);
                     } catch (JSONException e) {
@@ -132,6 +135,35 @@ public class DiningListFragment extends Fragment {
                     }
                 }
             }.setContext(getActivity()).execute(url);
+        }
+    }
+
+    public class PrettyNameArrayAdapter extends ArrayAdapter<String> {
+        int resource;
+        Pattern p = Pattern.compile("\\b([a-z])");
+
+        public PrettyNameArrayAdapter(Context context, int res, ArrayList<String> items) {
+            super(context, res, items);
+            this.resource = res;
+        }
+
+        @Override
+        public View getView(int position, View convertView, ViewGroup parent) {
+            LayoutInflater inflater = LayoutInflater.from(getContext());
+            TextView label = (TextView) inflater.inflate(this.resource, parent, false);
+            String name = getItem(position);
+
+            name = name.replace("_", " ");
+            Matcher m = p.matcher(name);
+            StringBuffer sb = new StringBuffer();
+            while (m.find()) {
+                m.appendReplacement(sb, m.group(1).toUpperCase());
+            }
+            m.appendTail(sb);
+
+            label.setText(sb.toString());
+
+            return label;
         }
     }
 }
