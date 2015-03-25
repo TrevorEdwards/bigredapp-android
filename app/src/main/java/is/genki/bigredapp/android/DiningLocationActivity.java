@@ -89,7 +89,7 @@ public class DiningLocationActivity extends ActionBarActivity {
         else {
             mDiningHall = savedInstanceState.getString(KEY_DINING_HALL);
             mDiningHallUrl = savedInstanceState.getString(KEY_DINING_HALL_URL);
-            setTitle(savedInstanceState.getString(KEY_DINING_HALL));
+            setTitle(mDiningHall);
 
             // Restore the fragment's instance
             mFragment = (PlaceholderFragment)

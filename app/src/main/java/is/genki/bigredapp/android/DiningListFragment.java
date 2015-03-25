@@ -105,9 +105,9 @@ public class DiningListFragment extends Fragment {
         intent.putExtra(DiningLocationActivity.KEY_DINING_HALL, diningHall);
         intent.putExtra(DiningLocationActivity.KEY_DINING_HALL_URL, url);
 
-        ViewCompat.setTransitionName(view, "shared_transition");
-        ActivityOptionsCompat options =
-                ActivityOptionsCompat.makeSceneTransitionAnimation(getActivity(), view, "shared_transition");
+        // ViewCompat.setTransitionName(view, "shared_transition");
+        ActivityOptionsCompat options = ActivityOptionsCompat.makeScaleUpAnimation(
+                view, 0, 0, view.getWidth(), view.getHeight());
         getActivity().startActivity(intent, options.toBundle());
     }
 
