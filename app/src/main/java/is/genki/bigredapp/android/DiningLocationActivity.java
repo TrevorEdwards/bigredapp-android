@@ -77,9 +77,7 @@ public class DiningLocationActivity extends ActionBarActivity {
 
                                 fragment.addMenus(menus);
                             } catch (JSONException e) {
-                                Toast.makeText(DiningLocationActivity.this,
-                                        "No menu for this location yet!",
-                                        Toast.LENGTH_LONG).show();
+                                fragment.noMenus();
                             }
                         }
                     }.setContext(this).execute(url);
@@ -125,11 +123,13 @@ public class DiningLocationActivity extends ActionBarActivity {
      * A placeholder fragment containing a simple view.
      */
     public static class PlaceholderFragment extends Fragment {
+        private static final String KEY_HAS_MENUS = "PlaceholderFragment.HAS_MENUS";
 
         private RecyclerView mRecyclerView;
         private LinearLayoutManager mLayoutManager;
         private MealMenuAdapter mAdapter;
         private View mLoadingPanel;
+        private View mNoMenusPanel;
         private List<MealMenu> mMenus;
 
         public PlaceholderFragment() {
@@ -146,6 +146,7 @@ public class DiningLocationActivity extends ActionBarActivity {
             mRecyclerView.setLayoutManager(mLayoutManager);
 
             mLoadingPanel = rootView.findViewById(R.id.menuLoadingPanel);
+            mNoMenusPanel = rootView.findViewById(R.id.menuNonePanel);
 
             return rootView;
         }
@@ -159,16 +160,22 @@ public class DiningLocationActivity extends ActionBarActivity {
 
         @Override
         public void onSaveInstanceState(Bundle outState) {
-            ArrayList<String> meals = new ArrayList<>();
-            ArrayList<String> menus = new ArrayList<>();
+            if (mMenus != null && mMenus.size() > 0) {
+                outState.putBoolean(KEY_HAS_MENUS, true);
+                ArrayList<String> meals = new ArrayList<>();
+                ArrayList<String> menus = new ArrayList<>();
 
-            for (MealMenu m : mMenus) {
-                meals.add(m.meal);
-                menus.add(m.menu);
+                for (MealMenu m : mMenus) {
+                    meals.add(m.meal);
+                    menus.add(m.menu);
+                }
+
+                outState.putStringArrayList(KEY_MEALS, meals);
+                outState.putStringArrayList(KEY_MENUS, menus);
             }
-
-            outState.putStringArrayList(KEY_MEALS, meals);
-            outState.putStringArrayList(KEY_MENUS, menus);
+            else {
+                outState.putBoolean(KEY_HAS_MENUS, false);
+            }
 
             super.onSaveInstanceState(outState);
         }
@@ -178,16 +185,26 @@ public class DiningLocationActivity extends ActionBarActivity {
             super.onActivityCreated(savedInstanceState);
 
             if (savedInstanceState != null) {
-                mMenus = new ArrayList<>();
+                if (savedInstanceState.getBoolean(KEY_HAS_MENUS)) {
+                    mMenus = new ArrayList<>();
 
-                ArrayList<String> meals = savedInstanceState.getStringArrayList(KEY_MEALS);
-                ArrayList<String> menus = savedInstanceState.getStringArrayList(KEY_MENUS);
-                for (int i = 0; i < meals.size(); i++) {
-                    mMenus.add(new MealMenu(meals.get(i), menus.get(i)));
+                    ArrayList<String> meals = savedInstanceState.getStringArrayList(KEY_MEALS);
+                    ArrayList<String> menus = savedInstanceState.getStringArrayList(KEY_MENUS);
+                    for (int i = 0; i < meals.size(); i++) {
+                        mMenus.add(new MealMenu(meals.get(i), menus.get(i)));
+                    }
+
+                    addMenus(mMenus);
                 }
-
-                addMenus(mMenus);
+                else {
+                    noMenus();
+                }
             }
+        }
+
+        public void noMenus() {
+            mLoadingPanel.setVisibility(View.GONE);
+            mNoMenusPanel.setVisibility(View.VISIBLE);
         }
     }
 

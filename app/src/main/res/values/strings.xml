@@ -5,4 +5,5 @@
     <string name="title_dininglocation_list">DiningLocations</string>
     <string name="title_dininglocation_detail">DiningLocation Detail</string>
     <string name="title_activity_dining_location">DiningLocationActivity</string>
+    <string name="no_menu_available">No menus available for here. Why not try something new?</string>
 </resources>
