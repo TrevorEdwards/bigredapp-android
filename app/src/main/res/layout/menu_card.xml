@@ -23,7 +23,7 @@
             android:paddingBottom="8dp"
             android:paddingLeft="4dp"
             android:paddingRight="4dp"
-            android:background="@color/primaryDef"
+            android:background="@color/primary"
             android:textColor="@android:color/white"
             android:fontFamily="sans-serif-light"
             />
