@@ -82,6 +82,11 @@ public class GetRequest extends AsyncTask<String, Void, String> {
         }
     }
 
+    /**
+     * https://developer.android.com/training/basics/network-ops/connecting.html#connection
+     * @return the device has a connection to the internet
+     * Makes a Toast if there is no connection
+     */
     public static boolean isConnected(Activity activity) {
         ConnectivityManager connMgr = (ConnectivityManager) activity.getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();

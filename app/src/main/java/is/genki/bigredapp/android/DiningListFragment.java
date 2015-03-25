@@ -57,27 +57,11 @@ public class DiningListFragment extends Fragment {
     }
 
     /**
-     * https://developer.android.com/training/basics/network-ops/connecting.html#connection
-     * @return the device has a connection to the internet
-     * Makes a Toast if there is no connection
-     */
-    private boolean isConnected() {
-        ConnectivityManager connMgr = (ConnectivityManager) getActivity().getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
-        if (networkInfo != null && networkInfo.isConnected()) {
-            return true;
-        } else {
-            Toast.makeText(getActivity(), "No Internet Connection", Toast.LENGTH_LONG).show();
-            return false;
-        }
-    }
-
-    /**
      * Populates mDiningList with the String list of dining halls.
      * Sets mListView's adapter to this list.
      */
     private void getDiningList() {
-        if (isConnected()) {
+        if (GetRequest.isConnected(getActivity())) {
             // Async Task to get the list of dining halls
             new GetRequest() {
                 @Override
