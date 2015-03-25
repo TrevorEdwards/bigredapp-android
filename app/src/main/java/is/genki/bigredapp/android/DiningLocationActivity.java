@@ -1,9 +1,7 @@
 package is.genki.bigredapp.android;
 
-import android.app.AlertDialog;
 import android.support.annotation.Nullable;
 import android.support.v7.app.ActionBarActivity;
-import android.support.v7.app.ActionBar;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -13,9 +11,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.os.Build;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -32,18 +28,20 @@ public class DiningLocationActivity extends ActionBarActivity {
 
     private static final String KEY_MEALS = "DiningLocationActivity.MEALS";
     private static final String KEY_MENUS = "DiningLocationActivity.MENUS";
+    private static final String KEY_FRAGMENT = "DiningLocationActivity.FRAGMENT";
 
     private String mDiningHall;
     private String mDiningHallUrl;
+    private PlaceholderFragment mFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_dining_location);
-        final PlaceholderFragment fragment = new PlaceholderFragment();
+        mFragment = new PlaceholderFragment();
         if (savedInstanceState == null) {
             getSupportFragmentManager().beginTransaction()
-                    .add(R.id.container, fragment)
+                    .add(R.id.container, mFragment)
                     .commit();
 
             Bundle extras = getIntent().getExtras();
@@ -75,9 +73,9 @@ public class DiningLocationActivity extends ActionBarActivity {
                                     menus.add(new MealMenu(meal, menu.toString()));
                                 }
 
-                                fragment.addMenus(menus);
+                                mFragment.addMenus(menus);
                             } catch (JSONException e) {
-                                fragment.noMenus();
+                                mFragment.noMenus();
                             }
                         }
                     }.setContext(this).execute(url);
@@ -85,7 +83,13 @@ public class DiningLocationActivity extends ActionBarActivity {
             }
         }
         else {
+            mDiningHall = savedInstanceState.getString(KEY_DINING_HALL);
+            mDiningHallUrl = savedInstanceState.getString(KEY_DINING_HALL_URL);
             setTitle(savedInstanceState.getString(KEY_DINING_HALL));
+
+            // Restore the fragment's instance
+            mFragment = (PlaceholderFragment)
+                    getSupportFragmentManager().getFragment(savedInstanceState, KEY_FRAGMENT);
         }
     }
 
@@ -93,6 +97,9 @@ public class DiningLocationActivity extends ActionBarActivity {
     protected void onSaveInstanceState(Bundle outState) {
         outState.putString(KEY_DINING_HALL, mDiningHall);
         outState.putString(KEY_DINING_HALL_URL, mDiningHallUrl);
+
+        // Save the fragment's instance
+        getSupportFragmentManager().putFragment(outState, KEY_FRAGMENT, mFragment);
 
         super.onSaveInstanceState(outState);
     }
