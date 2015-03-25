@@ -7,6 +7,8 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.ActionBarActivity;
+import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -42,6 +44,8 @@ public class DiningListFragment extends Fragment {
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_main, container, false);
         mListView = (ListView) rootView.findViewById(R.id.listView);
+        ((ActionBarActivity) getActivity())
+                .setSupportActionBar((Toolbar) rootView.findViewById(R.id.main_toolbar));
 
         // http://developer.android.com/guide/topics/ui/declaring-layout.html#HandlingUserSelections
         AdapterView.OnItemClickListener mListViewClickHandler = new AdapterView.OnItemClickListener() {

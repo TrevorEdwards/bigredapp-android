@@ -4,12 +4,22 @@
     android:layout_height="match_parent"
     tools:context="is.genki.bigredapp.android.DiningLocationActivity$PlaceholderFragment">
 
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/menu_toolbar"
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:layout_alignParentTop="true"
+        android:minHeight="?attr/actionBarSize"
+        android:background="?attr/colorPrimary"
+        android:theme="@style/toolbar" />
+
     <android.support.v7.widget.RecyclerView
         android:id="@+id/menuList"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:paddingLeft="4dp"
         android:paddingRight="4dp"
+        android:layout_below="@id/menu_toolbar"
         />
 
     <RelativeLayout
