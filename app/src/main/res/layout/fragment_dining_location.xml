@@ -1,5 +1,6 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="is.genki.bigredapp.android.DiningLocationActivity$PlaceholderFragment">
 
@@ -10,4 +11,15 @@
         android:paddingLeft="4dp"
         android:paddingRight="4dp"
         />
+
+    <RelativeLayout
+        android:id="@+id/menuLoadingPanel"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center">
+        <ProgressBar
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:indeterminate="true" />
+    </RelativeLayout>
 </RelativeLayout>

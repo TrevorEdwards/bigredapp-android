@@ -108,6 +108,7 @@ public class DiningLocationActivity extends ActionBarActivity {
         private RecyclerView mRecyclerView;
         private LinearLayoutManager mLayoutManager;
         private MealMenuAdapter mAdapter;
+        private View mLoadingPanel;
 
         public PlaceholderFragment() {
         }
@@ -122,10 +123,13 @@ public class DiningLocationActivity extends ActionBarActivity {
             mLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
             mRecyclerView.setLayoutManager(mLayoutManager);
 
+            mLoadingPanel = rootView.findViewById(R.id.menuLoadingPanel);
+
             return rootView;
         }
 
         public void addMenus(List<MealMenu> menus) {
+            mLoadingPanel.setVisibility(View.GONE);
             mAdapter = new MealMenuAdapter(menus);
             mRecyclerView.setAdapter(mAdapter);
         }
