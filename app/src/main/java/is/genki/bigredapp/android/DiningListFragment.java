@@ -6,7 +6,9 @@ import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
+import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.app.Fragment;
+import android.support.v4.view.ViewCompat;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
@@ -50,7 +52,7 @@ public class DiningListFragment extends Fragment {
         // http://developer.android.com/guide/topics/ui/declaring-layout.html#HandlingUserSelections
         AdapterView.OnItemClickListener mListViewClickHandler = new AdapterView.OnItemClickListener() {
             public void onItemClick(AdapterView parent, View v, int position, long id) {
-                handleMenuResponse(mDiningList.get(position));
+                handleMenuResponse(v, mDiningList.get(position));
             }
         };
         mListView.setOnItemClickListener(mListViewClickHandler);
@@ -92,17 +94,21 @@ public class DiningListFragment extends Fragment {
     }
 
     /**
+     * @param view
      * @param diningHall the dining hall's id as a String, as per RedAPI.
      * Displays today's menu for the given dining hall.
-     * If there is none, displays a Toast saying so.
      */
-    private void handleMenuResponse(final String diningHall) {
+    private void handleMenuResponse(View view, final String diningHall) {
         Intent intent = new Intent(getActivity(), DiningLocationActivity.class);
         final String mealCsv = MEALS_LIST[0] + "," + MEALS_LIST[1] + "," + MEALS_LIST[2];
         final String url = BASE_URL + "/menu/" + diningHall + "/" + mealCsv + "/MEALS";
         intent.putExtra(DiningLocationActivity.KEY_DINING_HALL, diningHall);
         intent.putExtra(DiningLocationActivity.KEY_DINING_HALL_URL, url);
-        startActivity(intent);
+
+        ViewCompat.setTransitionName(view, "shared_transition");
+        ActivityOptionsCompat options =
+                ActivityOptionsCompat.makeSceneTransitionAnimation(getActivity(), view, "shared_transition");
+        getActivity().startActivity(intent, options.toBundle());
     }
 
     /**
