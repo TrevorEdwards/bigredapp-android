@@ -1,6 +1,7 @@
 package is.genki.bigredapp.android;
 
 import android.app.AlertDialog;
+import android.support.annotation.Nullable;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.ActionBar;
 import android.support.v4.app.Fragment;
@@ -29,6 +30,12 @@ public class DiningLocationActivity extends ActionBarActivity {
     public static final String KEY_DINING_HALL = "DiningLocationActivity.DINING_HALL";
     public static final String KEY_DINING_HALL_URL = "DiningLocationActivity.DINING_HALL_URL";
 
+    private static final String KEY_MEALS = "DiningLocationActivity.MEALS";
+    private static final String KEY_MENUS = "DiningLocationActivity.MENUS";
+
+    private String mDiningHall;
+    private String mDiningHallUrl;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -38,45 +45,59 @@ public class DiningLocationActivity extends ActionBarActivity {
             getSupportFragmentManager().beginTransaction()
                     .add(R.id.container, fragment)
                     .commit();
-        }
 
-        Bundle extras = getIntent().getExtras();
-        if (extras != null) {
-            final String diningHall = extras.getString(KEY_DINING_HALL);
-            String url = extras.getString(KEY_DINING_HALL_URL);
+            Bundle extras = getIntent().getExtras();
+            if (extras != null) {
+                final String diningHall = extras.getString(KEY_DINING_HALL);
+                String url = extras.getString(KEY_DINING_HALL_URL);
 
-            setTitle(diningHall);
+                setTitle(diningHall);
+                mDiningHall = diningHall;
+                mDiningHallUrl = url;
 
-            if (GetRequest.isConnected(this)) {
-                // Async Task to get the menu for a dining hall
-                new GetRequest() {
-                    @Override
-                    protected void onPostExecute(String result) {
-                        try {
-                            List<MealMenu> menus = new ArrayList<>();
-                            JSONObject jsonResult = new JSONObject(result);
-                            for (String meal : DiningListFragment.MEALS_LIST) {
-                                StringBuilder menu = new StringBuilder();
-                                JSONArray jsonArray = jsonResult.getJSONObject(meal).getJSONArray(diningHall);
-                                int len = jsonArray.length();
-                                for (int i=0; i<len; i++) {
-                                    menu.append(jsonArray.getJSONObject(i).getString("name"));
-                                    menu.append(", ");
+                if (GetRequest.isConnected(this)) {
+                    // Async Task to get the menu for a dining hall
+                    new GetRequest() {
+                        @Override
+                        protected void onPostExecute(String result) {
+                            try {
+                                List<MealMenu> menus = new ArrayList<>();
+                                JSONObject jsonResult = new JSONObject(result);
+                                for (String meal : DiningListFragment.MEALS_LIST) {
+                                    StringBuilder menu = new StringBuilder();
+                                    JSONArray jsonArray = jsonResult.getJSONObject(meal).getJSONArray(diningHall);
+                                    int len = jsonArray.length();
+                                    for (int i=0; i<len; i++) {
+                                        menu.append(jsonArray.getJSONObject(i).getString("name"));
+                                        menu.append(", ");
+                                    }
+
+                                    menus.add(new MealMenu(meal, menu.toString()));
                                 }
 
-                                menus.add(new MealMenu(meal, menu.toString()));
-
                                 fragment.addMenus(menus);
+                            } catch (JSONException e) {
+                                Toast.makeText(DiningLocationActivity.this,
+                                        "No menu for this location yet!",
+                                        Toast.LENGTH_LONG).show();
                             }
-                        } catch (JSONException e) {
-                            Toast.makeText(DiningLocationActivity.this, "No menu for this location yet!", Toast.LENGTH_LONG).show();
                         }
-                    }
-                }.setContext(this).execute(url);
+                    }.setContext(this).execute(url);
+                }
             }
+        }
+        else {
+            setTitle(savedInstanceState.getString(KEY_DINING_HALL));
         }
     }
 
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        outState.putString(KEY_DINING_HALL, mDiningHall);
+        outState.putString(KEY_DINING_HALL_URL, mDiningHallUrl);
+
+        super.onSaveInstanceState(outState);
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -109,6 +130,7 @@ public class DiningLocationActivity extends ActionBarActivity {
         private LinearLayoutManager mLayoutManager;
         private MealMenuAdapter mAdapter;
         private View mLoadingPanel;
+        private List<MealMenu> mMenus;
 
         public PlaceholderFragment() {
         }
@@ -129,9 +151,43 @@ public class DiningLocationActivity extends ActionBarActivity {
         }
 
         public void addMenus(List<MealMenu> menus) {
+            mMenus = menus;
             mLoadingPanel.setVisibility(View.GONE);
             mAdapter = new MealMenuAdapter(menus);
             mRecyclerView.setAdapter(mAdapter);
+        }
+
+        @Override
+        public void onSaveInstanceState(Bundle outState) {
+            ArrayList<String> meals = new ArrayList<>();
+            ArrayList<String> menus = new ArrayList<>();
+
+            for (MealMenu m : mMenus) {
+                meals.add(m.meal);
+                menus.add(m.menu);
+            }
+
+            outState.putStringArrayList(KEY_MEALS, meals);
+            outState.putStringArrayList(KEY_MENUS, menus);
+
+            super.onSaveInstanceState(outState);
+        }
+
+        @Override
+        public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+            super.onActivityCreated(savedInstanceState);
+
+            if (savedInstanceState != null) {
+                mMenus = new ArrayList<>();
+
+                ArrayList<String> meals = savedInstanceState.getStringArrayList(KEY_MEALS);
+                ArrayList<String> menus = savedInstanceState.getStringArrayList(KEY_MENUS);
+                for (int i = 0; i < meals.size(); i++) {
+                    mMenus.add(new MealMenu(meals.get(i), menus.get(i)));
+                }
+
+                addMenus(mMenus);
+            }
         }
     }
 
