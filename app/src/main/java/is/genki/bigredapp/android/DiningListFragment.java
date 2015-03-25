@@ -2,6 +2,7 @@ package is.genki.bigredapp.android;
 
 import android.app.AlertDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
@@ -30,7 +31,7 @@ import java.util.regex.Pattern;
 public class DiningListFragment extends Fragment {
 
     private static final String BASE_URL = "http://redapi-tious.rhcloud.com/dining";
-    private static final String[] MEALS_LIST = {"Breakfast", "Lunch", "Dinner"};
+    public static final String[] MEALS_LIST = {"Breakfast", "Lunch", "Dinner"};
     private ListView mListView;
     private ArrayList<String> mDiningList;
 
@@ -108,34 +109,12 @@ public class DiningListFragment extends Fragment {
      * If there is none, displays a Toast saying so.
      */
     private void handleMenuResponse(final String diningHall) {
+        Intent intent = new Intent(getActivity(), DiningLocationActivity.class);
         final String mealCsv = MEALS_LIST[0] + "," + MEALS_LIST[1] + "," + MEALS_LIST[2];
         final String url = BASE_URL + "/menu/" + diningHall + "/" + mealCsv + "/MEALS";
-        if (isConnected()) {
-            // Async Task to get the menu for a dining hall
-            new GetRequest() {
-                @Override
-                protected void onPostExecute(String result) {
-                    try {
-                        String menu = "";
-                        JSONObject jsonResult = new JSONObject(result);
-                        for (String meal : MEALS_LIST) {
-                            menu = menu + meal + ":\n";
-                            JSONArray jsonArray = jsonResult.getJSONObject(meal).getJSONArray(diningHall);
-                            int len = jsonArray.length();
-                            for (int i=0; i<len; i++) {
-                                menu = menu + jsonArray.getJSONObject(i).getString("name")+", ";
-                            }
-                            menu = menu + "\n\n";
-                        }
-                        new AlertDialog.Builder(getActivity())
-                                .setTitle("Today's Menu").setMessage(menu)
-                                .create().show();
-                    } catch (JSONException e) {
-                        Toast.makeText(getActivity(), "No menu for this location yet!", Toast.LENGTH_LONG).show();
-                    }
-                }
-            }.setContext(getActivity()).execute(url);
-        }
+        intent.putExtra(DiningLocationActivity.KEY_DINING_HALL, diningHall);
+        intent.putExtra(DiningLocationActivity.KEY_DINING_HALL_URL, url);
+        startActivity(intent);
     }
 
     /**

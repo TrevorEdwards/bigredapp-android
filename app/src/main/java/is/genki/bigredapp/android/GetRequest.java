@@ -2,6 +2,8 @@ package is.genki.bigredapp.android;
 
 import android.app.Activity;
 import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.widget.Toast;
 
@@ -80,4 +82,14 @@ public class GetRequest extends AsyncTask<String, Void, String> {
         }
     }
 
+    public static boolean isConnected(Activity activity) {
+        ConnectivityManager connMgr = (ConnectivityManager) activity.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
+        if (networkInfo != null && networkInfo.isConnected()) {
+            return true;
+        } else {
+            Toast.makeText(activity, "No Internet Connection", Toast.LENGTH_LONG).show();
+            return false;
+        }
+    }
 }
