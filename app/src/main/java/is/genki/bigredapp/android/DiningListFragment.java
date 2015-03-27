@@ -1,14 +1,10 @@
 package is.genki.bigredapp.android;
 
-import android.app.AlertDialog;
 import android.content.Context;
 import android.content.Intent;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.app.Fragment;
-import android.support.v4.view.ViewCompat;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
@@ -22,7 +18,6 @@ import android.widget.Toast;
 
 import org.json.JSONArray;
 import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.regex.Matcher;
@@ -52,7 +47,17 @@ public class DiningListFragment extends Fragment {
         // http://developer.android.com/guide/topics/ui/declaring-layout.html#HandlingUserSelections
         AdapterView.OnItemClickListener mListViewClickHandler = new AdapterView.OnItemClickListener() {
             public void onItemClick(AdapterView parent, View v, int position, long id) {
-                handleMenuResponse(v, mDiningList.get(position));
+                String diningHall = mDiningList.get(position);
+                Intent intent = new Intent(getActivity(), DiningLocationActivity.class);
+                final String mealCsv = MEALS_LIST[0] + "," + MEALS_LIST[1] + "," + MEALS_LIST[2];
+                final String url = BASE_URL + "/menu/" + diningHall + "/" + mealCsv + "/MEALS";
+                intent.putExtra(DiningLocationActivity.KEY_DINING_HALL, diningHall);
+                intent.putExtra(DiningLocationActivity.KEY_DINING_HALL_URL, url);
+
+                // ViewCompat.setTransitionName(view, "shared_transition");
+                ActivityOptionsCompat options = ActivityOptionsCompat.makeScaleUpAnimation(
+                        v, 0, 0, v.getWidth(), v.getHeight());
+                getActivity().startActivity(intent, options.toBundle());
             }
         };
         mListView.setOnItemClickListener(mListViewClickHandler);
@@ -91,24 +96,6 @@ public class DiningListFragment extends Fragment {
                 }
             }.setContext(getActivity()).execute(BASE_URL);
         }
-    }
-
-    /**
-     * @param view
-     * @param diningHall the dining hall's id as a String, as per RedAPI.
-     * Displays today's menu for the given dining hall.
-     */
-    private void handleMenuResponse(View view, final String diningHall) {
-        Intent intent = new Intent(getActivity(), DiningLocationActivity.class);
-        final String mealCsv = MEALS_LIST[0] + "," + MEALS_LIST[1] + "," + MEALS_LIST[2];
-        final String url = BASE_URL + "/menu/" + diningHall + "/" + mealCsv + "/MEALS";
-        intent.putExtra(DiningLocationActivity.KEY_DINING_HALL, diningHall);
-        intent.putExtra(DiningLocationActivity.KEY_DINING_HALL_URL, url);
-
-        // ViewCompat.setTransitionName(view, "shared_transition");
-        ActivityOptionsCompat options = ActivityOptionsCompat.makeScaleUpAnimation(
-                view, 0, 0, view.getWidth(), view.getHeight());
-        getActivity().startActivity(intent, options.toBundle());
     }
 
     /**
