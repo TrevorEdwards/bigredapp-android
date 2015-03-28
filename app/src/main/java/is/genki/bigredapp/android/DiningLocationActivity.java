@@ -57,6 +57,7 @@ public class DiningLocationActivity extends ActionBarActivity {
                         @Override
                         protected void onPostExecute(String result) {
                             try {
+                                if (result == null) throw new JSONException("Request timed out");
                                 List<MealMenu> menus = new ArrayList<>();
                                 JSONObject jsonResult = new JSONObject(result);
                                 for (String meal : DiningListFragment.MEALS_LIST) {
