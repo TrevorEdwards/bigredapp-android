@@ -48,12 +48,8 @@ public class DiningLocationActivity extends ActionBarActivity {
 
             Bundle extras = getIntent().getExtras();
             if (extras != null) {
-                final String diningHall = extras.getString(KEY_DINING_HALL);
-                String url = extras.getString(KEY_DINING_HALL_URL);
-
-                setTitle(diningHall);
-                mDiningHall = diningHall;
-                mDiningHallUrl = url;
+                mDiningHall = extras.getString(KEY_DINING_HALL);
+                mDiningHallUrl = extras.getString(KEY_DINING_HALL_URL);
 
                 if (GetRequest.isConnected(this)) {
                     // Async Task to get the menu for a dining hall
@@ -68,11 +64,11 @@ public class DiningLocationActivity extends ActionBarActivity {
                                     StringBuilder menu = new StringBuilder();
                                     JSONObject mealObject = jsonResult.getJSONObject(meal);
                                     if (mealObject != null) {
-                                        JSONArray jsonArray = mealObject.getJSONArray(diningHall);
+                                        JSONArray jsonArray = mealObject.getJSONArray(mDiningHall);
                                         int len = jsonArray.length();
                                         for (int i=0; i<len; i++) {
+                                            if (i != 0) menu.append(", ");
                                             menu.append(jsonArray.getJSONObject(i).getString("name"));
-                                            menu.append(", ");
                                         }
                                         menus.add(new MealMenu(meal, menu.toString()));
                                     }
@@ -82,19 +78,18 @@ public class DiningLocationActivity extends ActionBarActivity {
                                 mFragment.noMenus();
                             }
                         }
-                    }.setContext(this).execute(url);
+                    }.setContext(this).execute(mDiningHallUrl);
                 }
             }
         }
         else {
             mDiningHall = savedInstanceState.getString(KEY_DINING_HALL);
             mDiningHallUrl = savedInstanceState.getString(KEY_DINING_HALL_URL);
-            setTitle(mDiningHall);
-
             // Restore the fragment's instance
             mFragment = (PlaceholderFragment)
                     getSupportFragmentManager().getFragment(savedInstanceState, KEY_FRAGMENT);
         }
+        setTitle(mDiningHall);
     }
 
     @Override
