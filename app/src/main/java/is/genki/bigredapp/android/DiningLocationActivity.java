@@ -66,16 +66,17 @@ public class DiningLocationActivity extends ActionBarActivity {
                                 JSONObject jsonResult = new JSONObject(result);
                                 for (String meal : DiningListFragment.MEALS_LIST) {
                                     StringBuilder menu = new StringBuilder();
-                                    JSONArray jsonArray = jsonResult.getJSONObject(meal).getJSONArray(diningHall);
-                                    int len = jsonArray.length();
-                                    for (int i=0; i<len; i++) {
-                                        menu.append(jsonArray.getJSONObject(i).getString("name"));
-                                        menu.append(", ");
+                                    JSONObject mealObject = jsonResult.getJSONObject(meal);
+                                    if (mealObject != null) {
+                                        JSONArray jsonArray = mealObject.getJSONArray(diningHall);
+                                        int len = jsonArray.length();
+                                        for (int i=0; i<len; i++) {
+                                            menu.append(jsonArray.getJSONObject(i).getString("name"));
+                                            menu.append(", ");
+                                        }
+                                        menus.add(new MealMenu(meal, menu.toString()));
                                     }
-
-                                    menus.add(new MealMenu(meal, menu.toString()));
                                 }
-
                                 mFragment.addMenus(menus);
                             } catch (JSONException e) {
                                 mFragment.noMenus();

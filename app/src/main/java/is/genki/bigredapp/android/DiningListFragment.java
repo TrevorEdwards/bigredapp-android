@@ -30,7 +30,7 @@ import java.util.regex.Pattern;
 public class DiningListFragment extends Fragment {
 
     private static final String BASE_URL = "http://redapi-tious.rhcloud.com/dining";
-    public static final String[] MEALS_LIST = {"Breakfast", "Lunch", "Dinner"};
+    public static final String[] MEALS_LIST = {"Breakfast", "Brunch", "Lunch", "Dinner"};
     private ListView mListView;
     private ArrayList<String> mDiningList;
 
@@ -49,7 +49,7 @@ public class DiningListFragment extends Fragment {
             public void onItemClick(AdapterView parent, View v, int position, long id) {
                 String diningHall = mDiningList.get(position);
                 Intent intent = new Intent(getActivity(), DiningLocationActivity.class);
-                final String mealCsv = MEALS_LIST[0] + "," + MEALS_LIST[1] + "," + MEALS_LIST[2];
+                final String mealCsv = MEALS_LIST[0] + "," + MEALS_LIST[1] + "," + MEALS_LIST[2] + "," + MEALS_LIST[3];
                 final String url = BASE_URL + "/menu/" + diningHall + "/" + mealCsv + "/MEALS";
                 intent.putExtra(DiningLocationActivity.KEY_DINING_HALL, diningHall);
                 intent.putExtra(DiningLocationActivity.KEY_DINING_HALL_URL, url);
