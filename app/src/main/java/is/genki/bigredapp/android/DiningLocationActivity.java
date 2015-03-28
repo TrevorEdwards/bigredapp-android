@@ -1,9 +1,8 @@
 package is.genki.bigredapp.android;
 
-import android.support.annotation.Nullable;
-import android.support.v7.app.ActionBarActivity;
-import android.support.v4.app.Fragment;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -20,7 +19,10 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
-
+/**
+ * Activity containing a ListView of dining halls.
+ * Each dining hall name can be tapped to get it's menu for today.
+ */
 public class DiningLocationActivity extends ActionBarActivity {
 
     public static final String KEY_DINING_HALL = "DiningLocationActivity.DINING_HALL";
@@ -32,13 +34,13 @@ public class DiningLocationActivity extends ActionBarActivity {
 
     private String mDiningHall;
     private String mDiningHallUrl;
-    private PlaceholderFragment mFragment;
+    private LocationInfoFragment mFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_dining_location);
-        mFragment = new PlaceholderFragment();
+        mFragment = new LocationInfoFragment();
         if (savedInstanceState == null) {
             getSupportFragmentManager().beginTransaction()
                     .add(R.id.container, mFragment)
@@ -46,12 +48,8 @@ public class DiningLocationActivity extends ActionBarActivity {
 
             Bundle extras = getIntent().getExtras();
             if (extras != null) {
-                final String diningHall = extras.getString(KEY_DINING_HALL);
-                String url = extras.getString(KEY_DINING_HALL_URL);
-
-                setTitle(diningHall);
-                mDiningHall = diningHall;
-                mDiningHallUrl = url;
+                mDiningHall = extras.getString(KEY_DINING_HALL);
+                mDiningHallUrl = extras.getString(KEY_DINING_HALL_URL);
 
                 if (GetRequest.isConnected(this)) {
                     // Async Task to get the menu for a dining hall
@@ -64,34 +62,34 @@ public class DiningLocationActivity extends ActionBarActivity {
                                 JSONObject jsonResult = new JSONObject(result);
                                 for (String meal : DiningListFragment.MEALS_LIST) {
                                     StringBuilder menu = new StringBuilder();
-                                    JSONArray jsonArray = jsonResult.getJSONObject(meal).getJSONArray(diningHall);
-                                    int len = jsonArray.length();
-                                    for (int i=0; i<len; i++) {
-                                        menu.append(jsonArray.getJSONObject(i).getString("name"));
-                                        menu.append(", ");
+                                    JSONObject mealObject = jsonResult.getJSONObject(meal);
+                                    if (mealObject != null) {
+                                        JSONArray jsonArray = mealObject.getJSONArray(mDiningHall);
+                                        int len = jsonArray.length();
+                                        for (int i=0; i<len; i++) {
+                                            if (i != 0) menu.append(", ");
+                                            menu.append(jsonArray.getJSONObject(i).getString("name"));
+                                        }
+                                        menus.add(new MealMenu(meal, menu.toString()));
                                     }
-
-                                    menus.add(new MealMenu(meal, menu.toString()));
                                 }
-
                                 mFragment.addMenus(menus);
                             } catch (JSONException e) {
                                 mFragment.noMenus();
                             }
                         }
-                    }.setContext(this).execute(url);
+                    }.setContext(this).execute(mDiningHallUrl);
                 }
             }
         }
         else {
             mDiningHall = savedInstanceState.getString(KEY_DINING_HALL);
             mDiningHallUrl = savedInstanceState.getString(KEY_DINING_HALL_URL);
-            setTitle(mDiningHall);
-
             // Restore the fragment's instance
-            mFragment = (PlaceholderFragment)
+            mFragment = (LocationInfoFragment)
                     getSupportFragmentManager().getFragment(savedInstanceState, KEY_FRAGMENT);
         }
+        setTitle(mDiningHall);
     }
 
     @Override
@@ -128,10 +126,11 @@ public class DiningLocationActivity extends ActionBarActivity {
     }
 
     /**
-     * A placeholder fragment containing a simple view.
+     * A fragment containing a RecyclerView with cards for the different meals
+     * https://developer.android.com/training/material/lists-cards.html
      */
-    public static class PlaceholderFragment extends Fragment {
-        private static final String KEY_HAS_MENUS = "PlaceholderFragment.HAS_MENUS";
+    public static class LocationInfoFragment extends Fragment {
+        private static final String KEY_HAS_MENUS = "LocationInfoFragment.HAS_MENUS";
 
         private RecyclerView mRecyclerView;
         private LinearLayoutManager mLayoutManager;
@@ -140,8 +139,7 @@ public class DiningLocationActivity extends ActionBarActivity {
         private View mNoMenusPanel;
         private List<MealMenu> mMenus;
 
-        public PlaceholderFragment() {
-        }
+        public LocationInfoFragment() {}
 
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -168,7 +166,9 @@ public class DiningLocationActivity extends ActionBarActivity {
 
         @Override
         public void onSaveInstanceState(Bundle outState) {
-            if (mMenus != null && mMenus.size() > 0) {
+            if (mMenus == null || mMenus.size() == 0) {
+                outState.putBoolean(KEY_HAS_MENUS, false);
+            } else {
                 outState.putBoolean(KEY_HAS_MENUS, true);
                 ArrayList<String> meals = new ArrayList<>();
                 ArrayList<String> menus = new ArrayList<>();
@@ -181,15 +181,11 @@ public class DiningLocationActivity extends ActionBarActivity {
                 outState.putStringArrayList(KEY_MEALS, meals);
                 outState.putStringArrayList(KEY_MENUS, menus);
             }
-            else {
-                outState.putBoolean(KEY_HAS_MENUS, false);
-            }
-
             super.onSaveInstanceState(outState);
         }
 
         @Override
-        public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        public void onActivityCreated(Bundle savedInstanceState) {
             super.onActivityCreated(savedInstanceState);
 
             if (savedInstanceState != null) {
@@ -203,8 +199,7 @@ public class DiningLocationActivity extends ActionBarActivity {
                     }
 
                     addMenus(mMenus);
-                }
-                else {
+                } else {
                     noMenus();
                 }
             }
@@ -238,6 +233,10 @@ public class DiningLocationActivity extends ActionBarActivity {
         }
     }
 
+    /**
+     * Adapter for the cards in the LocationInfoFragment
+     * https://developer.android.com/training/material/lists-cards.html
+     */
     public static class MealMenuAdapter extends RecyclerView.Adapter<MealMenuViewHolder> {
         private List<MealMenu> menus;
 
