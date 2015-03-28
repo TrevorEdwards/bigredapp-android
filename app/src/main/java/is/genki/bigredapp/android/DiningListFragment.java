@@ -1,10 +1,9 @@
 package is.genki.bigredapp.android;
 
-import android.app.AlertDialog;
 import android.content.Context;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
+import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,7 +16,6 @@ import android.widget.Toast;
 
 import org.json.JSONArray;
 import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.regex.Matcher;
@@ -30,7 +28,7 @@ import java.util.regex.Pattern;
 public class DiningListFragment extends Fragment {
 
     private static final String BASE_URL = "http://redapi-tious.rhcloud.com/dining";
-    private static final String[] MEALS_LIST = {"Breakfast", "Lunch", "Dinner"};
+    public static final String[] MEALS_LIST = {"Breakfast", "Brunch", "Lunch", "Dinner"};
     private ListView mListView;
     private ArrayList<String> mDiningList;
 
@@ -45,7 +43,17 @@ public class DiningListFragment extends Fragment {
         // http://developer.android.com/guide/topics/ui/declaring-layout.html#HandlingUserSelections
         AdapterView.OnItemClickListener mListViewClickHandler = new AdapterView.OnItemClickListener() {
             public void onItemClick(AdapterView parent, View v, int position, long id) {
-                handleMenuResponse(mDiningList.get(position));
+                String diningHall = mDiningList.get(position);
+                Intent intent = new Intent(getActivity(), DiningLocationActivity.class);
+                final String mealCsv = MEALS_LIST[0] + "," + MEALS_LIST[1] + "," + MEALS_LIST[2] + "," + MEALS_LIST[3];
+                final String url = BASE_URL + "/menu/" + diningHall + "/" + mealCsv + "/MEALS";
+                intent.putExtra(DiningLocationActivity.KEY_DINING_HALL, diningHall);
+                intent.putExtra(DiningLocationActivity.KEY_DINING_HALL_URL, url);
+
+                // ViewCompat.setTransitionName(view, "shared_transition");
+                ActivityOptionsCompat options = ActivityOptionsCompat.makeScaleUpAnimation(
+                        v, 0, 0, v.getWidth(), v.getHeight());
+                getActivity().startActivity(intent, options.toBundle());
             }
         };
         mListView.setOnItemClickListener(mListViewClickHandler);
@@ -56,27 +64,11 @@ public class DiningListFragment extends Fragment {
     }
 
     /**
-     * https://developer.android.com/training/basics/network-ops/connecting.html#connection
-     * @return the device has a connection to the internet
-     * Makes a Toast if there is no connection
-     */
-    private boolean isConnected() {
-        ConnectivityManager connMgr = (ConnectivityManager) getActivity().getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
-        if (networkInfo != null && networkInfo.isConnected()) {
-            return true;
-        } else {
-            Toast.makeText(getActivity(), "No Internet Connection", Toast.LENGTH_LONG).show();
-            return false;
-        }
-    }
-
-    /**
      * Populates mDiningList with the String list of dining halls.
      * Sets mListView's adapter to this list.
      */
     private void getDiningList() {
-        if (isConnected()) {
+        if (GetRequest.isConnected(getActivity())) {
             // Async Task to get the list of dining halls
             new GetRequest() {
                 @Override
@@ -99,42 +91,6 @@ public class DiningListFragment extends Fragment {
                     }
                 }
             }.setContext(getActivity()).execute(BASE_URL);
-        }
-    }
-
-    /**
-     * @param diningHall the dining hall's id as a String, as per RedAPI.
-     * Displays today's menu for the given dining hall.
-     * If there is none, displays a Toast saying so.
-     */
-    private void handleMenuResponse(final String diningHall) {
-        final String mealCsv = MEALS_LIST[0] + "," + MEALS_LIST[1] + "," + MEALS_LIST[2];
-        final String url = BASE_URL + "/menu/" + diningHall + "/" + mealCsv + "/MEALS";
-        if (isConnected()) {
-            // Async Task to get the menu for a dining hall
-            new GetRequest() {
-                @Override
-                protected void onPostExecute(String result) {
-                    try {
-                        String menu = "";
-                        JSONObject jsonResult = new JSONObject(result);
-                        for (String meal : MEALS_LIST) {
-                            menu = menu + meal + ":\n";
-                            JSONArray jsonArray = jsonResult.getJSONObject(meal).getJSONArray(diningHall);
-                            int len = jsonArray.length();
-                            for (int i=0; i<len; i++) {
-                                menu = menu + jsonArray.getJSONObject(i).getString("name")+", ";
-                            }
-                            menu = menu + "\n\n";
-                        }
-                        new AlertDialog.Builder(getActivity())
-                                .setTitle("Today's Menu").setMessage(menu)
-                                .create().show();
-                    } catch (JSONException e) {
-                        Toast.makeText(getActivity(), "No menu for this location yet!", Toast.LENGTH_LONG).show();
-                    }
-                }
-            }.setContext(getActivity()).execute(url);
         }
     }
 

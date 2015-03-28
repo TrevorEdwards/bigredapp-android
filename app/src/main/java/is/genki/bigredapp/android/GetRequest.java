@@ -2,6 +2,8 @@ package is.genki.bigredapp.android;
 
 import android.app.Activity;
 import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.widget.Toast;
 
@@ -58,8 +60,8 @@ public class GetRequest extends AsyncTask<String, Void, String> {
         try {
             URL url = new URL(myUrl);
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-            conn.setReadTimeout(10000); // milliseconds
-            conn.setConnectTimeout(15000); // milliseconds
+            conn.setReadTimeout(4000); // milliseconds
+            conn.setConnectTimeout(4000); // milliseconds
             conn.setRequestMethod("GET");
             conn.setDoInput(true);
             conn.connect(); // starts the query
@@ -80,4 +82,19 @@ public class GetRequest extends AsyncTask<String, Void, String> {
         }
     }
 
+    /**
+     * https://developer.android.com/training/basics/network-ops/connecting.html#connection
+     * @return the device has a connection to the internet
+     * Makes a Toast if there is no connection
+     */
+    public static boolean isConnected(Activity activity) {
+        ConnectivityManager connMgr = (ConnectivityManager) activity.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
+        if (networkInfo != null && networkInfo.isConnected()) {
+            return true;
+        } else {
+            Toast.makeText(activity, "No Internet Connection", Toast.LENGTH_LONG).show();
+            return false;
+        }
+    }
 }
