@@ -58,7 +58,6 @@ public class DiningLocationActivity extends ActionBarActivity {
                         protected void onPostExecute(String result) {
                             try {
                                 List<MealMenu> menus = new ArrayList<>();
-                                if (result == null) throw new JSONException("No result");
                                 JSONObject jsonResult = new JSONObject(result);
                                 for (String meal : DiningListFragment.MEALS_LIST) {
                                     StringBuilder menu = new StringBuilder();
