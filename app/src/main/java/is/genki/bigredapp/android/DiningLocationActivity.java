@@ -1,13 +1,11 @@
 package is.genki.bigredapp.android;
 
 import android.support.annotation.Nullable;
-import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -40,7 +38,6 @@ public class DiningLocationActivity extends ActionBarActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_dining_location);
-
         mFragment = new PlaceholderFragment();
         if (savedInstanceState == null) {
             getSupportFragmentManager().beginTransaction()
@@ -158,17 +155,6 @@ public class DiningLocationActivity extends ActionBarActivity {
 
             mLoadingPanel = rootView.findViewById(R.id.menuLoadingPanel);
             mNoMenusPanel = rootView.findViewById(R.id.menuNonePanel);
-
-            Toolbar toolbar = (Toolbar) rootView.findViewById(R.id.menu_toolbar);
-            ((ActionBarActivity) getActivity()).setSupportActionBar(toolbar);
-            // Setting setDisplayHomeAsUpEnabled doesn't work for some reason.
-            toolbar.setNavigationIcon(getResources().getDrawable(R.drawable.abc_ic_ab_back_mtrl_am_alpha));
-            toolbar.setNavigationOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    getActivity().onBackPressed();
-                }
-            });
 
             return rootView;
         }
