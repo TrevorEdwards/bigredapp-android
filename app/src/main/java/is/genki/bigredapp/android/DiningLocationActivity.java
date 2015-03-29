@@ -62,16 +62,19 @@ public class DiningLocationActivity extends ActionBarActivity {
                                 JSONObject jsonResult = new JSONObject(result);
                                 for (String meal : DiningListFragment.MEALS_LIST) {
                                     StringBuilder menu = new StringBuilder();
-                                    JSONObject mealObject = jsonResult.getJSONObject(meal);
-                                    if (mealObject != null) {
-                                        JSONArray jsonArray = mealObject.getJSONArray(mDiningHall);
-                                        int len = jsonArray.length();
-                                        for (int i=0; i<len; i++) {
-                                            if (i != 0) menu.append(", ");
-                                            menu.append(jsonArray.getJSONObject(i).getString("name"));
+                                    // some menus won't have all the meals (e.g. Brunch), but are still valid
+                                    try {
+                                        JSONObject mealObject = jsonResult.getJSONObject(meal);
+                                        if (mealObject != null) {
+                                            JSONArray jsonArray = mealObject.getJSONArray(mDiningHall);
+                                            int len = jsonArray.length();
+                                            for (int i = 0; i < len; i++) {
+                                                if (i != 0) menu.append(", ");
+                                                menu.append(jsonArray.getJSONObject(i).getString("name"));
+                                            }
+                                            menus.add(new MealMenu(meal, menu.toString()));
                                         }
-                                        menus.add(new MealMenu(meal, menu.toString()));
-                                    }
+                                    } catch (JSONException ignored) {}
                                 }
                                 mFragment.addMenus(menus);
                             } catch (JSONException e) {
