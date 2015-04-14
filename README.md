@@ -12,7 +12,7 @@
 * Code: well-commented, easy to maintain.
 
 ## Download?
-* It will be put up on the Google Play Store sometime this Spring Break (starting March 28th 2015).
+* The Play Store upload has been somewhat delayed, as I have been without a laptop to get an AS environment up and running again (and of course, school etc.). I will update this when it is up.
 * Until then, please see _Up and Running_ below, and contribute! :)
 
 ## Current TODO
