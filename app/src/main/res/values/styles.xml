@@ -8,4 +8,6 @@
 
     <color name="primary">#ef4035</color>
     <color name="primaryDark">#b31b1b</color>
+    <color name="openGreen">#388E3C</color>
+    <color name="almostOpenGreen">#81C784</color>
 </resources>

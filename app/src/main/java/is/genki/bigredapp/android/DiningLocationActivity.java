@@ -26,14 +26,14 @@ import java.util.List;
 public class DiningLocationActivity extends ActionBarActivity {
 
     public static final String KEY_DINING_HALL = "DiningLocationActivity.DINING_HALL";
-    public static final String KEY_DINING_HALL_URL = "DiningLocationActivity.DINING_HALL_URL";
 
+
+    public static final String[] MEALS_LIST = {"Breakfast", "Brunch", "Lunch", "Dinner"};
     private static final String KEY_MEALS = "DiningLocationActivity.MEALS";
     private static final String KEY_MENUS = "DiningLocationActivity.MENUS";
     private static final String KEY_FRAGMENT = "DiningLocationActivity.FRAGMENT";
 
     private String mDiningHall;
-    private String mDiningHallUrl;
     private LocationInfoFragment mFragment;
 
     @Override
@@ -49,10 +49,10 @@ public class DiningLocationActivity extends ActionBarActivity {
             Bundle extras = getIntent().getExtras();
             if (extras != null) {
                 mDiningHall = extras.getString(KEY_DINING_HALL);
-                mDiningHallUrl = extras.getString(KEY_DINING_HALL_URL);
-
                 if (GetRequest.isConnected(this)) {
-                    // Async Task to get the menu for a dining hall
+                    // Async Task to get the menu for this dining hall
+                    final String diningHallMenuUrl = DiningListFragment.BASE_URL + "/menu/" + mDiningHall + "/" +
+                            MEALS_LIST[0] + "," + MEALS_LIST[1] + "," + MEALS_LIST[2] + "," + MEALS_LIST[3] + "/MEALS";
                     new GetRequest() {
                         @Override
                         protected void onPostExecute(String result) {
@@ -60,7 +60,7 @@ public class DiningLocationActivity extends ActionBarActivity {
                                 if (result == null) throw new JSONException("Request timed out");
                                 List<MealMenu> menus = new ArrayList<>();
                                 JSONObject jsonResult = new JSONObject(result);
-                                for (String meal : DiningListFragment.MEALS_LIST) {
+                                for (String meal : MEALS_LIST) {
                                     StringBuilder menu = new StringBuilder();
                                     JSONObject mealObject = jsonResult.getJSONObject(meal);
                                     // some menus won't have all the meals (e.g. Brunch), but are still valid
@@ -80,13 +80,12 @@ public class DiningLocationActivity extends ActionBarActivity {
                                 mFragment.noMenus();
                             }
                         }
-                    }.setContext(this).execute(mDiningHallUrl);
+                    }.setContext(this).execute(diningHallMenuUrl);
                 }
             }
         }
         else {
             mDiningHall = savedInstanceState.getString(KEY_DINING_HALL);
-            mDiningHallUrl = savedInstanceState.getString(KEY_DINING_HALL_URL);
             // Restore the fragment's instance
             mFragment = (LocationInfoFragment)
                     getSupportFragmentManager().getFragment(savedInstanceState, KEY_FRAGMENT);
@@ -97,7 +96,6 @@ public class DiningLocationActivity extends ActionBarActivity {
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         outState.putString(KEY_DINING_HALL, mDiningHall);
-        outState.putString(KEY_DINING_HALL_URL, mDiningHallUrl);
 
         // Save the fragment's instance
         getSupportFragmentManager().putFragment(outState, KEY_FRAGMENT, mFragment);
