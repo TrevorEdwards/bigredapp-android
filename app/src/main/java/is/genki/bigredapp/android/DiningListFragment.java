@@ -184,8 +184,9 @@ public class DiningListFragment extends Fragment {
 
         // create the date range of CalEvents to get for each location
         final Calendar rightNow = Calendar.getInstance();
+        rightNow.add(Calendar.DATE, -1); // so can handle open hours after midnight
         String dateRange = getRequestCalFormat(rightNow) + "-";
-        rightNow.add(Calendar.DATE, NUM_DAYS_OF_EVENTS_TO_GET);
+        rightNow.add(Calendar.DATE, NUM_DAYS_OF_EVENTS_TO_GET + 1);
         dateRange = dateRange + getRequestCalFormat(rightNow);
         final String diningHallCalendarsUrl = DiningListFragment.BASE_URL + "/event/" + commaSeparatedDiningHalls + "/" + dateRange;
         Log.d("DiningListFragment", diningHallCalendarsUrl);
