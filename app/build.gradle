@@ -7,7 +7,7 @@ android {
     defaultConfig {
         applicationId "is.genki.bigredapp.android"
         minSdkVersion 19
-        targetSdkVersion 21
+        targetSdkVersion 22
         versionCode 1
         versionName "1.0"
     }
@@ -20,8 +20,8 @@ android {
 }
 
 dependencies {
-    compile 'com.android.support:appcompat-v7:22.0.0'
-    compile 'com.android.support:support-v4:22.0.0'
+    compile 'com.android.support:appcompat-v7:22.1.0'
+    compile 'com.android.support:support-v4:22.1.0'
     compile 'com.android.support:cardview-v7:22.0.0'
     compile 'com.android.support:recyclerview-v7:22.0.0'
 }

@@ -28,7 +28,7 @@ public class DiningLocationActivity extends ActionBarActivity {
     public static final String KEY_DINING_HALL = "DiningLocationActivity.DINING_HALL";
 
 
-    public static final String[] MEALS_LIST = {"Breakfast", "Brunch", "Lunch", "Dinner"};
+    private static final String[] MEALS_LIST = {"Breakfast", "Brunch", "Lunch", "Dinner"};
     private static final String KEY_MEALS = "DiningLocationActivity.MEALS";
     private static final String KEY_MENUS = "DiningLocationActivity.MENUS";
     private static final String KEY_FRAGMENT = "DiningLocationActivity.FRAGMENT";
@@ -212,8 +212,8 @@ public class DiningLocationActivity extends ActionBarActivity {
     }
 
     public static class MealMenu {
-        public String meal;
-        public String menu;
+        public final String meal;
+        public final String menu;
 
         public MealMenu(String meal, String menu) {
             this.meal = meal;
@@ -222,8 +222,8 @@ public class DiningLocationActivity extends ActionBarActivity {
     }
 
     public static class MealMenuViewHolder extends RecyclerView.ViewHolder {
-        protected TextView mMeal;
-        protected TextView mMenu;
+        final TextView mMeal;
+        final TextView mMenu;
 
         public MealMenuViewHolder(View v) {
             super(v);
@@ -238,7 +238,7 @@ public class DiningLocationActivity extends ActionBarActivity {
      * https://developer.android.com/training/material/lists-cards.html
      */
     public static class MealMenuAdapter extends RecyclerView.Adapter<MealMenuViewHolder> {
-        private List<MealMenu> menus;
+        private final List<MealMenu> menus;
 
         public MealMenuAdapter(List<MealMenu> menus) {
             this.menus = menus;

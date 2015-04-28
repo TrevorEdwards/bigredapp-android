@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -295,7 +296,7 @@ public class DiningListFragment extends Fragment {
             }
         }
         hoursTextView.setText(hoursText);
-        int textColor = 0;
+        int textColor;
         Resources res = mContext.getResources();
         if (isOpen) {
             textColor = res.getColor(R.color.openGreen);
@@ -315,14 +316,14 @@ public class DiningListFragment extends Fragment {
         public Calendar endCal;
 
         @Override
-        public int compareTo(CalEvent cOther) {
+        public int compareTo(@NonNull CalEvent cOther) {
             return this.startCal.compareTo(cOther.startCal);
         }
     }
 
     public static class NameCalEventList {
-        public String name;
-        public ArrayList<CalEvent> calEventList;
+        public final String name;
+        public final ArrayList<CalEvent> calEventList;
 
         public NameCalEventList(String name, ArrayList<CalEvent> calEventList) {
             this.name = name;
@@ -336,10 +337,10 @@ public class DiningListFragment extends Fragment {
      */
     public class DiningHallListAdapter extends ArrayAdapter<NameCalEventList> {
 
-        int mResource;
-        LayoutInflater mInflater;
+        final int mResource;
+        final LayoutInflater mInflater;
         final Pattern p = Pattern.compile("\\b([a-z])");
-        Calendar mRightNowCal;
+        final Calendar mRightNowCal;
 
         public DiningHallListAdapter(Context context, int res, ArrayList<NameCalEventList> items) {
             super(context, res, items);
