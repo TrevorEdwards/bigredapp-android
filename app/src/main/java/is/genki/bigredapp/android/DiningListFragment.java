@@ -117,7 +117,7 @@ public class DiningListFragment extends SwipeRefreshListFragment {
      * Sets mListView's adapter on the parsed information.
      * When finished, stops the refreshing indicator.
      */
-    private void onRefreshComplete(String result) {
+    private void handleCalendarEventsResponse(String result) {
         try {
             if (result == null) throw new JSONException("Request timed out");
 
@@ -209,7 +209,7 @@ public class DiningListFragment extends SwipeRefreshListFragment {
         new GetRequest() {
             @Override
             protected void onPostExecute(String result) {
-                onRefreshComplete(result);
+                handleCalendarEventsResponse(result);
             }
         }.setContext(mContext).execute(diningHallCalendarsUrl);
     }

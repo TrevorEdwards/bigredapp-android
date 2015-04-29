@@ -60,8 +60,8 @@ public class GetRequest extends AsyncTask<String, Void, String> {
         try {
             URL url = new URL(myUrl);
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-            conn.setReadTimeout(6000); // milliseconds
-            conn.setConnectTimeout(6000); // milliseconds
+            conn.setReadTimeout(8000); // milliseconds
+            conn.setConnectTimeout(8000); // milliseconds
             conn.setRequestMethod("GET");
             conn.setDoInput(true);
             conn.connect(); // starts the query
