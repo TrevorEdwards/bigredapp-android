@@ -106,14 +106,17 @@ public class DiningListFragment extends SwipeRefreshListFragment {
         if (cachedDiningList == null || cachedDiningListDate == 0 ||
                 System.currentTimeMillis() - cachedDiningListDate >= MS_IN_2_WEEKS) {
             // no cached diningList that's younger than a week, so let's request a new one
+            mDiningList.clear();
             getDiningList();
         } else {
             // we have a cached diningList that's younger than a week, so let's use it
             try {
-                JSONArray jsonDiningList = new JSONArray(cachedDiningList);
-                int len = jsonDiningList.length();
-                for (int i = 0; i < len; i++) {
-                    mDiningList.add((String) jsonDiningList.get(i));
+                if (mDiningList.isEmpty()) {
+                    JSONArray jsonDiningList = new JSONArray(cachedDiningList);
+                    int len = jsonDiningList.length();
+                    for (int i = 0; i < len; i++) {
+                        mDiningList.add((String) jsonDiningList.get(i));
+                    }
                 }
                 // now we can get the calendar events for the list of dining halls
                 getDiningCalendarEvents();
@@ -122,6 +125,7 @@ public class DiningListFragment extends SwipeRefreshListFragment {
             }
         }
     }
+
 
     /**
      * Handles the response from getDiningCalendarEvents().
@@ -137,7 +141,7 @@ public class DiningListFragment extends SwipeRefreshListFragment {
             Calendar cal = Calendar.getInstance();
             int offsetUTC = (TimeZone.getDefault().getOffset(cal.getTimeInMillis())) / MS_IN_HOUR;
 
-            // parse the calendar data into a ArrayList<NameCalEventList>
+            // parse the calendar data into an ArrayList<NameCalEventList>
             JSONObject jsonResult = new JSONObject(result);
             for (String name : mDiningList) {
 
@@ -170,12 +174,15 @@ public class DiningListFragment extends SwipeRefreshListFragment {
                 nameCalEventLists.add(new NameCalEventList(name, calEventList));
             }
 
-
-            // http://developer.android.com/guide/topics/ui/declaring-layout.html#AdapterViews
-            ArrayAdapter<NameCalEventList> adapter = new DiningHallListAdapter(mContext,
-                    R.layout.dining_list_row, nameCalEventLists);
-            // mListView.setAdapter(adapter);
-            setListAdapter(adapter);
+            ArrayAdapter<NameCalEventList> adapter = (ArrayAdapter<NameCalEventList>) getListAdapter();
+            if (adapter == null) {
+                adapter = new DiningHallListAdapter(mContext, R.layout.dining_list_row, nameCalEventLists);
+                setListAdapter(adapter);
+            } else {
+                adapter.clear();
+                adapter.addAll(nameCalEventLists);
+                adapter.notifyDataSetChanged();
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
