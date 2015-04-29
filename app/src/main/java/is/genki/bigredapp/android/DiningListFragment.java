@@ -73,6 +73,17 @@ public class DiningListFragment extends SwipeRefreshListFragment {
     }
 
     @Override
+    public void onViewCreated(View view, Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                refreshContent();
+            }
+        });
+    }
+
+    @Override
     public void onListItemClick(ListView l, View v, int position, long id) {
         super.onListItemClick(l, v, position, id);
         String diningHall = mDiningList.get(position);
@@ -165,19 +176,11 @@ public class DiningListFragment extends SwipeRefreshListFragment {
                     R.layout.dining_list_row, nameCalEventLists);
             // mListView.setAdapter(adapter);
             setListAdapter(adapter);
-
-            setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-                @Override
-                public void onRefresh() {
-                    refreshContent();
-                }
-            });
-
-            // Stop the refreshing indicator
-            setRefreshing(false);
         } catch (Exception e) {
             e.printStackTrace();
         }
+        // Stop the refreshing indicator
+        setRefreshing(false);
     }
 
     // helper for getDiningCalendarEvents()
