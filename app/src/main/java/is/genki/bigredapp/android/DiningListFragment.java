@@ -7,16 +7,16 @@ import android.content.res.Resources;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityOptionsCompat;
-import android.support.v4.app.Fragment;
-import android.util.Log;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.example.android.swiperefreshlistfragment.SwipeRefreshListFragment;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -36,8 +36,11 @@ import java.util.regex.Pattern;
 /**
  * Fragment containing a ListView of dining halls.
  * Each dining hall name can be tapped to get it's menu for today.
+ * Has swipe-to-refresh, see:
+ * https://developer.android.com/samples/SwipeRefreshListFragment/src/
+ *  com.example.android.swiperefreshlistfragment/SwipeRefreshListFragmentFragment.html
  */
-public class DiningListFragment extends Fragment {
+public class DiningListFragment extends SwipeRefreshListFragment {
 
     private static final long MS_IN_2_WEEKS = 1209600000;
     private static final int MS_IN_HOUR = 3600000;
@@ -47,7 +50,6 @@ public class DiningListFragment extends Fragment {
     private static final int NUM_DAYS_OF_EVENTS_TO_GET = 6;
     
     private static Context mContext;
-    private ListView mListView;
     private ArrayList<String> mDiningList;
     private SharedPreferences mPreferences;
     private DateFormat mDateFormat;
@@ -56,34 +58,37 @@ public class DiningListFragment extends Fragment {
     public DiningListFragment() {}
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
         mContext = getActivity();
         mDiningList = new ArrayList<>();
 
         // to parse: 2015-04-25T16:30:00.000Z
         mDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
 
-        View rootView = inflater.inflate(R.layout.fragment_main, container, false);
-        mListView = (ListView) rootView.findViewById(R.id.listView);
-
-        // http://developer.android.com/guide/topics/ui/declaring-layout.html#HandlingUserSelections
-        AdapterView.OnItemClickListener mListViewClickHandler = new AdapterView.OnItemClickListener() {
-            public void onItemClick(AdapterView parent, View v, int position, long id) {
-                String diningHall = mDiningList.get(position);
-                Intent intent = new Intent(mContext, DiningLocationActivity.class);
-                intent.putExtra(DiningLocationActivity.KEY_DINING_HALL, diningHall);
-
-                // ViewCompat.setTransitionName(view, "shared_transition");
-                ActivityOptionsCompat options = ActivityOptionsCompat.makeScaleUpAnimation(
-                        v, 0, 0, v.getWidth(), v.getHeight());
-                mContext.startActivity(intent, options.toBundle());
-            }
-        };
-        mListView.setOnItemClickListener(mListViewClickHandler);
-
         mPreferences = getActivity().getPreferences(Context.MODE_PRIVATE);
 
+        refreshContent();
+    }
+
+    @Override
+    public void onListItemClick(ListView l, View v, int position, long id) {
+        super.onListItemClick(l, v, position, id);
+        String diningHall = mDiningList.get(position);
+        Intent intent = new Intent(mContext, DiningLocationActivity.class);
+        intent.putExtra(DiningLocationActivity.KEY_DINING_HALL, diningHall);
+
+        // ViewCompat.setTransitionName(view, "shared_transition");
+        ActivityOptionsCompat options = ActivityOptionsCompat.makeScaleUpAnimation(
+                v, 0, 0, v.getWidth(), v.getHeight());
+        mContext.startActivity(intent, options.toBundle());
+    }
+
+    /**
+     * Refreshes the content, for initialization and swipe-refresh
+     */
+    private void refreshContent() {
         // check for a cached dining list to use
         final String cachedDiningList = mPreferences.getString(DINING_LIST_KEY, null);
         final long cachedDiningListDate = mPreferences.getLong(DINING_LIST_DATE_KEY, 0);
@@ -105,21 +110,14 @@ public class DiningListFragment extends Fragment {
                 e.printStackTrace();
             }
         }
-
-        return rootView;
-    }
-
-    // helper for getDiningCalendarEvents()
-    private static String getRequestCalFormat(Calendar cal) {
-        return cal.getDisplayName(Calendar.MONTH, Calendar.SHORT, Locale.US) +
-                cal.get(Calendar.DAY_OF_MONTH) + "," + cal.get(Calendar.YEAR);
     }
 
     /**
      * Handles the response from getDiningCalendarEvents().
      * Sets mListView's adapter on the parsed information.
+     * When finished, stops the refreshing indicator.
      */
-    private void handleDiningCalendarEvents (String result) {
+    private void onRefreshComplete(String result) {
         try {
             if (result == null) throw new JSONException("Request timed out");
 
@@ -165,10 +163,27 @@ public class DiningListFragment extends Fragment {
             // http://developer.android.com/guide/topics/ui/declaring-layout.html#AdapterViews
             ArrayAdapter<NameCalEventList> adapter = new DiningHallListAdapter(mContext,
                     R.layout.dining_list_row, nameCalEventLists);
-            mListView.setAdapter(adapter);
+            // mListView.setAdapter(adapter);
+            setListAdapter(adapter);
+
+            setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+                @Override
+                public void onRefresh() {
+                    refreshContent();
+                }
+            });
+
+            // Stop the refreshing indicator
+            setRefreshing(false);
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    // helper for getDiningCalendarEvents()
+    private static String getRequestCalFormat(Calendar cal) {
+        return cal.getDisplayName(Calendar.MONTH, Calendar.SHORT, Locale.US) +
+                cal.get(Calendar.DAY_OF_MONTH) + "," + cal.get(Calendar.YEAR);
     }
 
     /**
@@ -190,12 +205,11 @@ public class DiningListFragment extends Fragment {
         rightNow.add(Calendar.DATE, NUM_DAYS_OF_EVENTS_TO_GET + 1);
         dateRange = dateRange + getRequestCalFormat(rightNow);
         final String diningHallCalendarsUrl = DiningListFragment.BASE_URL + "/event/" + commaSeparatedDiningHalls + "/" + dateRange;
-        Log.d("DiningListFragment", diningHallCalendarsUrl);
 
         new GetRequest() {
             @Override
             protected void onPostExecute(String result) {
-                handleDiningCalendarEvents(result);
+                onRefreshComplete(result);
             }
         }.setContext(mContext).execute(diningHallCalendarsUrl);
     }
@@ -263,7 +277,8 @@ public class DiningListFragment extends Fragment {
      * If nothing is found (this is looping through the next NUM_DAYS_OF_EVENTS_TO_GET days),
      *  then just return "closed".
      */
-    private static void setHoursText(TextView hoursTextView, Calendar rightNow, ArrayList<CalEvent> calEventList) {
+    private static void setHoursText(TextView hoursTextView, Calendar rightNow,
+                                     ArrayList<CalEvent> calEventList) {
         String hoursText = "closed";
         boolean isOpen = false;
         boolean isAlmostOpen = false; // if it is closed now but will be open within next 2 hours
@@ -371,7 +386,6 @@ public class DiningListFragment extends Fragment {
             }
 
             setHoursText(holder.hoursTextView, mRightNowCal, nameCalEventList.calEventList);
-//            holder.hoursTextView.setText(getHoursText(mRightNowCal, nameCalEventList.calEventList));
 
             // parse the name to make it pretty
             String name = nameCalEventList.name;
