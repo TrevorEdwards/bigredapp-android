@@ -274,6 +274,9 @@ public class DiningListFragment extends SwipeRefreshListFragment {
             case "0:00 pm":
                 return "noon";
             default:
+                if (ret.charAt(0) == '0') {
+                    ret = "12" + ret.substring(1);
+                }
                 return ret;
         }
     }
