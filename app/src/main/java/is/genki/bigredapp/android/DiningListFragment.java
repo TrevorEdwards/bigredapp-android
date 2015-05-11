@@ -14,6 +14,7 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.android.volley.Request;
 import com.android.volley.Response;
@@ -50,6 +51,7 @@ public class DiningListFragment extends SwipeRefreshListFragment {
     public static final String BASE_URL = "http://redapi-tious.rhcloud.com/dining";
     private static final String DINING_LIST_KEY = "DINING_LIST_KEY";
     private static final String DINING_LIST_DATE_KEY = "DINING_LIST_DATE_KEY";
+    private static final String LAST_REFRESHED_KEY = "LAST_REFRESHED_KEY";
     private static final int NUM_DAYS_OF_EVENTS_TO_GET = 6;
     
     private static Context mContext;
@@ -81,6 +83,19 @@ public class DiningListFragment extends SwipeRefreshListFragment {
                 refreshContent();
             }
         });
+    }
+
+    /**
+     * See http://developer.android.com/reference/android/app/Activity.html#ActivityLifecycle
+     */
+    @Override
+    public void onResume() {
+        super.onResume();
+        // if it has been an hour since the data was refreshed, show a pull-to-refresh hint
+        final long lastRefreshedTime = mPreferences.getLong(LAST_REFRESHED_KEY, 0);
+        if (lastRefreshedTime == 0 || System.currentTimeMillis() - lastRefreshedTime >= MS_IN_HOUR) {
+            Toast.makeText(mContext, "Hint: Pull down to refresh again!", Toast.LENGTH_LONG).show();
+        }
     }
 
     @Override
@@ -183,6 +198,8 @@ public class DiningListFragment extends SwipeRefreshListFragment {
         } catch (Exception e) {
             e.printStackTrace();
         }
+        // update the last-refreshed time
+        mPreferences.edit().putLong(LAST_REFRESHED_KEY, System.currentTimeMillis()).apply();
         // Stop the refreshing indicator
         setRefreshing(false);
     }
@@ -243,6 +260,9 @@ public class DiningListFragment extends SwipeRefreshListFragment {
                     new Response.Listener<JSONArray>() {
                 @Override
                 public void onResponse(JSONArray response) {
+                    // cache the result
+                    mPreferences.edit().putString(DINING_LIST_KEY, response.toString()).apply();
+                    mPreferences.edit().putLong(DINING_LIST_DATE_KEY, System.currentTimeMillis()).apply();
                     mDiningList = response;
                     getDiningCalendarEvents();
                 }
