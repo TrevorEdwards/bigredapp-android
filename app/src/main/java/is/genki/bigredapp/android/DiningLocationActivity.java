@@ -150,8 +150,6 @@ public class DiningLocationActivity extends ActionBarActivity {
         private View mNoMenusPanel;
         private List<MealMenu> mMenus;
 
-        public LocationInfoFragment() {}
-
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                                  Bundle savedInstanceState) {

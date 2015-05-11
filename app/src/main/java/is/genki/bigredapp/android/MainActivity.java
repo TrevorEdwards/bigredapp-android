@@ -15,6 +15,7 @@ public class MainActivity extends ActionBarActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         // See the "SingletonRequestQueue" class. Initializes the RequestQueue
+        //noinspection UnusedAssignment
         RequestQueue queue = SingletonRequestQueue.getInstance(this).getRequestQueue();
         if (savedInstanceState == null) {
             getSupportFragmentManager().beginTransaction()

@@ -58,8 +58,6 @@ public class DiningListFragment extends SwipeRefreshListFragment {
     private DateFormat mDateFormat;
     private static int mTextColor;
 
-    public DiningListFragment() {}
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
