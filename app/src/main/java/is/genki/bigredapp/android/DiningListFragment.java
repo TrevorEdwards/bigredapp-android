@@ -14,8 +14,11 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
+import com.android.volley.Request;
+import com.android.volley.Response;
+import com.android.volley.toolbox.JsonArrayRequest;
+import com.android.volley.toolbox.JsonObjectRequest;
 import com.example.android.swiperefreshlistfragment.SwipeRefreshListFragment;
 
 import org.json.JSONArray;
@@ -50,7 +53,7 @@ public class DiningListFragment extends SwipeRefreshListFragment {
     private static final int NUM_DAYS_OF_EVENTS_TO_GET = 6;
     
     private static Context mContext;
-    private ArrayList<String> mDiningList;
+    private JSONArray mDiningList;
     private SharedPreferences mPreferences;
     private DateFormat mDateFormat;
     private static int mTextColor;
@@ -62,7 +65,6 @@ public class DiningListFragment extends SwipeRefreshListFragment {
         super.onCreate(savedInstanceState);
 
         mContext = getActivity();
-        mDiningList = new ArrayList<>();
 
         // to parse: 2015-04-25T16:30:00.000Z
         mDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
@@ -86,14 +88,18 @@ public class DiningListFragment extends SwipeRefreshListFragment {
     @Override
     public void onListItemClick(ListView l, View v, int position, long id) {
         super.onListItemClick(l, v, position, id);
-        String diningHall = mDiningList.get(position);
-        Intent intent = new Intent(mContext, DiningLocationActivity.class);
-        intent.putExtra(DiningLocationActivity.KEY_DINING_HALL, diningHall);
+        try {
+            String diningHall = (String) mDiningList.get(position);
+            Intent intent = new Intent(mContext, DiningLocationActivity.class);
+            intent.putExtra(DiningLocationActivity.KEY_DINING_HALL, diningHall);
 
-        // ViewCompat.setTransitionName(view, "shared_transition");
-        ActivityOptionsCompat options = ActivityOptionsCompat.makeScaleUpAnimation(
-                v, 0, 0, v.getWidth(), v.getHeight());
-        mContext.startActivity(intent, options.toBundle());
+            // ViewCompat.setTransitionName(view, "shared_transition");
+            ActivityOptionsCompat options = ActivityOptionsCompat.makeScaleUpAnimation(
+                    v, 0, 0, v.getWidth(), v.getHeight());
+            mContext.startActivity(intent, options.toBundle());
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
     }
 
     /**
@@ -106,18 +112,12 @@ public class DiningListFragment extends SwipeRefreshListFragment {
         if (cachedDiningList == null || cachedDiningListDate == 0 ||
                 System.currentTimeMillis() - cachedDiningListDate >= MS_IN_2_WEEKS) {
             // no cached diningList that's younger than a week, so let's request a new one
-            mDiningList.clear();
+            mDiningList = new JSONArray();
             getDiningList();
         } else {
             // we have a cached diningList that's younger than a week, so let's use it
             try {
-                if (mDiningList.isEmpty()) {
-                    JSONArray jsonDiningList = new JSONArray(cachedDiningList);
-                    int len = jsonDiningList.length();
-                    for (int i = 0; i < len; i++) {
-                        mDiningList.add((String) jsonDiningList.get(i));
-                    }
-                }
+                mDiningList = new JSONArray(cachedDiningList);
                 // now we can get the calendar events for the list of dining halls
                 getDiningCalendarEvents();
             } catch (JSONException e) {
@@ -132,24 +132,23 @@ public class DiningListFragment extends SwipeRefreshListFragment {
      * Sets mListView's adapter on the parsed information.
      * When finished, stops the refreshing indicator.
      */
-    private void handleCalendarEventsResponse(String result) {
+    private void handleCalendarEventsResponse(JSONObject response) {
         try {
-            if (result == null) throw new JSONException("Request timed out");
-
             ArrayList<NameCalEventList> nameCalEventLists = new ArrayList<>();
 
             Calendar cal = Calendar.getInstance();
             int offsetUTC = (TimeZone.getDefault().getOffset(cal.getTimeInMillis())) / MS_IN_HOUR;
 
             // parse the calendar data into an ArrayList<NameCalEventList>
-            JSONObject jsonResult = new JSONObject(result);
-            for (String name : mDiningList) {
+            int mDiningListLen = mDiningList.length();
+            for (int i=0; i<mDiningListLen; i++) {
+                String name = (String) mDiningList.get(i);
 
-                JSONArray jsonEventList = jsonResult.getJSONArray(name);
-                int len = jsonEventList.length();
+                JSONArray jsonEventList = response.getJSONArray(name);
+                int jsonEventListLen = jsonEventList.length();
                 ArrayList<CalEvent> calEventList = new ArrayList<>();
-                for (int i=0; i<len; i++) {
-                    JSONObject jsonEvent = jsonEventList.getJSONObject(i);
+                for (int j=0; j<jsonEventListLen; j++) {
+                    JSONObject jsonEvent = jsonEventList.getJSONObject(j);
 
                     CalEvent calEvent = new CalEvent();
                     String summary = jsonEvent.getString("summary").toLowerCase();
@@ -191,68 +190,67 @@ public class DiningListFragment extends SwipeRefreshListFragment {
     }
 
     // helper for getDiningCalendarEvents()
-    private static String getRequestCalFormat(Calendar cal) {
+    private static String getRequestCalFormat (Calendar cal) {
         return cal.getDisplayName(Calendar.MONTH, Calendar.SHORT, Locale.US) +
                 cal.get(Calendar.DAY_OF_MONTH) + "," + cal.get(Calendar.YEAR);
     }
 
     /**
-     * Uses a GetRequest to RedAPI to get the calendar events for all the dining halls.
+     * Uses a Volley request to RedAPI to get the calendar events for all the dining halls.
      * Assumes mDiningList has already been set.
      * Calls handleDiningCalendarEvents on what is returned.
      */
     private void getDiningCalendarEvents() {
-        final StringBuilder builder = new StringBuilder();
-        for(String s : mDiningList) {
-            builder.append(s).append(',');
-        }
-        final String commaSeparatedDiningHalls = builder.toString();
-
-        // create the date range of CalEvents to get for each location
-        final Calendar rightNow = Calendar.getInstance();
-        rightNow.add(Calendar.DATE, -1); // so can handle open hours after midnight
-        String dateRange = getRequestCalFormat(rightNow) + "-";
-        rightNow.add(Calendar.DATE, NUM_DAYS_OF_EVENTS_TO_GET + 1);
-        dateRange = dateRange + getRequestCalFormat(rightNow);
-        final String diningHallCalendarsUrl = DiningListFragment.BASE_URL + "/event/" + commaSeparatedDiningHalls + "/" + dateRange;
-
-        new GetRequest() {
-            @Override
-            protected void onPostExecute(String result) {
-                handleCalendarEventsResponse(result);
+        try {
+            final StringBuilder builder = new StringBuilder();
+            int len = mDiningList.length();
+            for (int i=0; i<len; i++) {
+                    builder.append(mDiningList.get(i)).append(',');
             }
-        }.setContext(mContext).execute(diningHallCalendarsUrl);
+            final String commaSeparatedDiningHalls = builder.toString();
+
+            // create the date range of CalEvents to get for each location
+            final Calendar rightNow = Calendar.getInstance();
+            rightNow.add(Calendar.DATE, -1); // so can handle open hours after midnight
+            String dateRange = getRequestCalFormat(rightNow) + "-";
+            rightNow.add(Calendar.DATE, NUM_DAYS_OF_EVENTS_TO_GET + 1);
+            dateRange = dateRange + getRequestCalFormat(rightNow);
+            final String diningHallCalendarsUrl = DiningListFragment.BASE_URL + "/event/" + commaSeparatedDiningHalls + "/" + dateRange;
+
+            // See the "SingletonRequestQueue" Class
+            JsonObjectRequest jsonObjectRequest = (JsonObjectRequest)
+                    new JsonObjectRequest(Request.Method.GET, diningHallCalendarsUrl,
+                    new Response.Listener<JSONObject>() {
+                @Override
+                public void onResponse(JSONObject response) {
+                    handleCalendarEventsResponse(response);
+                }
+            }, SingletonRequestQueue.getErrorListener(mContext))
+                            .setRetryPolicy(SingletonRequestQueue.getRetryPolicy());
+            SingletonRequestQueue.getInstance(mContext).addToRequestQueue(jsonObjectRequest);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
     }
 
     /**
      * Uses a GetRequest to RedAPI to populate mDiningList with the String list of dining halls.
-     * After it is done, calls getDiningCalendarEvents() now that mDiningList is set
+     * After it is done, calls getDiningCalendarEvents() now that mDiningList is set.
+     * See the "SingletonRequestQueue" Class
      */
     private void getDiningList() {
-        if (GetRequest.isConnected(getActivity())) {
-            // Async Task to get the list of dining halls
-            new GetRequest() {
+        if (SingletonRequestQueue.isConnected(mContext)) {
+            JsonArrayRequest jsonArrayRequest = (JsonArrayRequest)
+                    new JsonArrayRequest(Request.Method.GET, BASE_URL,
+                    new Response.Listener<JSONArray>() {
                 @Override
-                protected void onPostExecute(String result) {
-                    try {
-                        // cache the result
-                        mPreferences.edit().putString(DINING_LIST_KEY, result).apply();
-                        mPreferences.edit().putLong(DINING_LIST_DATE_KEY, System.currentTimeMillis()).apply();
-
-                        // convert result to JSONArray, then get diningHall string list
-                        JSONArray jsonArray = new JSONArray(result);
-                        int len = jsonArray.length();
-                        for (int i=0; i<len; i++) {
-                            mDiningList.add(jsonArray.getString(i));
-                        }
-
-                        // now get the dining calendar events using this data
-                        getDiningCalendarEvents();
-                    } catch (JSONException e) {
-                        Toast.makeText(mContext, "Data has invalid format", Toast.LENGTH_LONG).show();
-                    }
+                public void onResponse(JSONArray response) {
+                    mDiningList = response;
+                    getDiningCalendarEvents();
                 }
-            }.setContext(mContext).execute(BASE_URL);
+            }, SingletonRequestQueue.getErrorListener(mContext))
+                            .setRetryPolicy(SingletonRequestQueue.getRetryPolicy());
+            SingletonRequestQueue.getInstance(mContext).addToRequestQueue(jsonArrayRequest);
         }
     }
 

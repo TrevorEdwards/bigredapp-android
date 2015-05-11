@@ -12,6 +12,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.android.volley.Request;
+import com.android.volley.Response;
+import com.android.volley.toolbox.JsonObjectRequest;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -45,43 +49,10 @@ public class DiningLocationActivity extends ActionBarActivity {
             getSupportFragmentManager().beginTransaction()
                     .add(R.id.container, mFragment)
                     .commit();
-
             Bundle extras = getIntent().getExtras();
             if (extras != null) {
                 mDiningHall = extras.getString(KEY_DINING_HALL);
-                if (GetRequest.isConnected(this)) {
-                    // Async Task to get the menu for this dining hall
-                    final String diningHallMenuUrl = DiningListFragment.BASE_URL + "/menu/" + mDiningHall + "/" +
-                            MEALS_LIST[0] + "," + MEALS_LIST[1] + "," + MEALS_LIST[2] + "," + MEALS_LIST[3] + "/MEALS";
-                    new GetRequest() {
-                        @Override
-                        protected void onPostExecute(String result) {
-                            try {
-                                if (result == null) throw new JSONException("Request timed out");
-                                List<MealMenu> menus = new ArrayList<>();
-                                JSONObject jsonResult = new JSONObject(result);
-                                for (String meal : MEALS_LIST) {
-                                    StringBuilder menu = new StringBuilder();
-                                    JSONObject mealObject = jsonResult.getJSONObject(meal);
-                                    // some menus won't have all the meals (e.g. Brunch), but are still valid
-                                    if (!mealObject.isNull(mDiningHall)) {
-                                        JSONArray jsonArray = mealObject.getJSONArray(mDiningHall);
-                                        int len = jsonArray.length();
-                                        for (int i = 0; i < len; i++) {
-                                            if (i != 0) menu.append(", ");
-                                            menu.append(jsonArray.getJSONObject(i).getString("name"));
-                                        }
-                                        menus.add(new MealMenu(meal, menu.toString()));
-                                    }
-                                }
-                                if (menus.size() == 0) throw new JSONException("No menus");
-                                mFragment.addMenus(menus);
-                            } catch (JSONException e) {
-                                mFragment.noMenus();
-                            }
-                        }
-                    }.setContext(this).execute(diningHallMenuUrl);
-                }
+                getLocationData();
             }
         }
         else {
@@ -91,6 +62,46 @@ public class DiningLocationActivity extends ActionBarActivity {
                     getSupportFragmentManager().getFragment(savedInstanceState, KEY_FRAGMENT);
         }
         setTitle(mDiningHall);
+    }
+
+    /**
+     * See the "SingletonRequestQueue" Class
+     */
+    private void getLocationData() {
+        if (SingletonRequestQueue.isConnected(this)) {
+            final String diningHallMenuUrl = DiningListFragment.BASE_URL + "/menu/" + mDiningHall + "/" +
+                    MEALS_LIST[0] + "," + MEALS_LIST[1] + "," + MEALS_LIST[2] + "," + MEALS_LIST[3] + "/MEALS";
+            JsonObjectRequest jsonObjectRequest = (JsonObjectRequest)
+                    new JsonObjectRequest(Request.Method.GET, diningHallMenuUrl,
+                    new Response.Listener<JSONObject>() {
+                @Override
+                public void onResponse(JSONObject response) {
+                    try {
+                        List<MealMenu> menus = new ArrayList<>();
+                        for (String meal : MEALS_LIST) {
+                            StringBuilder menu = new StringBuilder();
+                            JSONObject mealObject = response.getJSONObject(meal);
+                            // some menus won't have all the meals (e.g. Brunch), but are still valid
+                            if (!mealObject.isNull(mDiningHall)) {
+                                JSONArray jsonArray = mealObject.getJSONArray(mDiningHall);
+                                int len = jsonArray.length();
+                                for (int i = 0; i < len; i++) {
+                                    if (i != 0) menu.append(", ");
+                                    menu.append(jsonArray.getJSONObject(i).getString("name"));
+                                }
+                                menus.add(new MealMenu(meal, menu.toString()));
+                            }
+                        }
+                        if (menus.size() == 0) throw new JSONException("No menus");
+                        mFragment.addMenus(menus);
+                    } catch (JSONException e) {
+                        mFragment.noMenus();
+                    }
+                }
+            }, SingletonRequestQueue.getErrorListener(this))
+            .setRetryPolicy(SingletonRequestQueue.getRetryPolicy());
+            SingletonRequestQueue.getInstance(this).addToRequestQueue(jsonObjectRequest);
+        }
     }
 
     @Override
