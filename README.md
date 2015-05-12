@@ -1,5 +1,8 @@
 # Big Red App for Android
 
+## Download?
+* Download it from the Play Store [here](https://play.google.com/store/apps/details?id=is.genki.bigredapp.android)!
+ 
 ## What
 * It's still a pain to find Cornell University dining hall info on the phone...
 * So, this is a native Android app to help people do that :)
@@ -10,10 +13,6 @@
 * 100% free as in beer (no monetization) and free as in speech (open source).
 * App: native Android, easy to use, good looking, minimal, clean.
 * Code: well-commented, easy to maintain.
-
-## Download?
-* The Play Store upload has been somewhat delayed, as I have been without a laptop to get an AS environment up and running again (and of course, school etc.). I will update this when it is up.
-* Until then, please see _Up and Running_ below, and contribute! :)
 
 ## Current TODO
 * See the [issues page](https://github.com/genkimarshall/bigredapp-android/issues).
@@ -32,5 +31,7 @@
 
 ## Other
 * If anyone wants to do the iOS version please say so and we can put them under the same umbrella!
-* If you are interested in talking in person, I try to go to all [meetings](https://github.com/OpenSourceCornell/Meeting-Summaries/) of [Open Source Cornell](https://www.facebook.com/groups/opensourcecornell).
-* Check out the freenode irc at #opensourcecornell.
+* OpenSourceCornell - join!
+  * [Facebook Group](https://www.facebook.com/groups/opensourcecornell)
+  * [Slack chat](https://opensourcecornell.slack.com/signup)
+  * freenode IRC: #opensourcecornell
