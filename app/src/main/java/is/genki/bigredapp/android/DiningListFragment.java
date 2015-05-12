@@ -14,7 +14,6 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.android.volley.Request;
 import com.android.volley.Response;
@@ -46,8 +45,10 @@ import java.util.regex.Pattern;
  */
 public class DiningListFragment extends SwipeRefreshListFragment {
 
-    private static final long MS_IN_2_WEEKS = 1209600000;
+    private static final int MS_IN_30_MIN = 1800000;
     private static final int MS_IN_HOUR = 3600000;
+    private static final long MS_IN_2_WEEKS = 1209600000;
+
     public static final String BASE_URL = "http://redapi-tious.rhcloud.com/dining";
     private static final String DINING_LIST_KEY = "DINING_LIST_KEY";
     private static final String DINING_LIST_DATE_KEY = "DINING_LIST_DATE_KEY";
@@ -59,6 +60,7 @@ public class DiningListFragment extends SwipeRefreshListFragment {
     private SharedPreferences mPreferences;
     private DateFormat mDateFormat;
     private static int mTextColor;
+    private boolean onCreateHasJustFinished;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -72,6 +74,7 @@ public class DiningListFragment extends SwipeRefreshListFragment {
         mPreferences = getActivity().getPreferences(Context.MODE_PRIVATE);
 
         refreshContent();
+        onCreateHasJustFinished = true;
     }
 
     @Override
@@ -91,10 +94,16 @@ public class DiningListFragment extends SwipeRefreshListFragment {
     @Override
     public void onResume() {
         super.onResume();
-        // if it has been an hour since the data was refreshed, show a pull-to-refresh hint
-        final long lastRefreshedTime = mPreferences.getLong(LAST_REFRESHED_KEY, 0);
-        if (lastRefreshedTime == 0 || System.currentTimeMillis() - lastRefreshedTime >= MS_IN_HOUR) {
-            Toast.makeText(mContext, "Hint: Pull down to refresh again!", Toast.LENGTH_LONG).show();
+        if (onCreateHasJustFinished) {
+            // create has just been called => there is already new content => don't refresh
+            onCreateHasJustFinished = false;
+        } else {
+            // this is a true resume
+            final long lastRefreshedTime = mPreferences.getLong(LAST_REFRESHED_KEY, 0);
+            if (System.currentTimeMillis() - lastRefreshedTime >= MS_IN_30_MIN) {
+                // if it has been at least 30 min since the data was refreshed, get new data
+                refreshContent();
+            }
         }
     }
 
