@@ -2,7 +2,10 @@
 
 ## Download?
 * Download it from the Play Store [here](https://play.google.com/store/apps/details?id=is.genki.bigredapp.android)!
- 
+
+## iOS?
+* The iOS version has begun work by Matthew Gharrity [here](https://github.com/gharrma/bigredapp-ios). Thanks Matthew!
+
 ## What
 * It's still a pain to find Cornell University dining hall info on the phone...
 * So, this is a native Android app to help people do that :)
