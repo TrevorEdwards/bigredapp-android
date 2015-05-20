@@ -23,8 +23,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Activity containing a ListView of dining halls.
- * Each dining hall name can be tapped to get it's menu for today.
+ * Activity displaying info for the passed-in location.
+ * Currently, gets and displays the menu for all-you-can-eat dining halls.
  */
 public class DiningLocationActivity extends ActionBarActivity {
 
