@@ -45,7 +45,7 @@ import java.util.regex.Pattern;
  */
 public class DiningListFragment extends SwipeRefreshListFragment {
 
-    private static final int MS_IN_30_MIN = 1800000;
+    private static final int MS_IN_10_MIN = 600000;
     private static final int MS_IN_HOUR = 3600000;
     private static final long MS_IN_2_WEEKS = 1209600000;
 
@@ -100,8 +100,8 @@ public class DiningListFragment extends SwipeRefreshListFragment {
         } else {
             // this is a true resume
             final long lastRefreshedTime = mPreferences.getLong(LAST_REFRESHED_KEY, 0);
-            if (System.currentTimeMillis() - lastRefreshedTime >= MS_IN_30_MIN) {
-                // if it has been at least 30 min since the data was refreshed, get new data
+            if (System.currentTimeMillis() - lastRefreshedTime >= MS_IN_10_MIN) {
+                // if it has been at least 10 min since the data was refreshed, get new data
                 refreshContent();
             }
         }
@@ -137,7 +137,7 @@ public class DiningListFragment extends SwipeRefreshListFragment {
             mDiningList = new JSONArray();
             getDiningList();
         } else {
-            // we have a cached diningList that's younger than a week, so let's use it
+            // we have a cached diningList that's younger than 2 weeks, so let's use it
             try {
                 mDiningList = new JSONArray(cachedDiningList);
                 // now we can get the calendar events for the list of dining halls
@@ -175,7 +175,7 @@ public class DiningListFragment extends SwipeRefreshListFragment {
                     CalEvent calEvent = new CalEvent();
                     String summary = jsonEvent.getString("summary").toLowerCase();
                     // we only care about open events
-                    if (!summary.equals("closed")) {
+                    if (!summary.contains("closed")) {
                         Date startDate = mDateFormat.parse(jsonEvent.getString("start"));
                         cal = Calendar.getInstance();
                         cal.setTime(startDate);
