@@ -10,7 +10,6 @@
 * It's still a pain to find Cornell University dining hall info on the phone...
 * So, this is a native Android app to help people do that :)
 * We are using [Kevin Chavez](https://github.com/mrkev)'s API [here](http://redapi-tious.rhcloud.com/).
-* Recent screenshots [here](https://imgur.com/a/iul7J).
 
 ## Objectives
 * 100% free as in beer (no monetization) and free as in speech (open source).
@@ -42,9 +41,7 @@
 4. Navigate to where you cloned this repository (it should have a special icon by it in the file browser)
 5. Click Ok
 
-## Other
-* If anyone wants to do the iOS version please say so and we can put them under the same umbrella!
-* OpenSourceCornell - join!
-  * [Facebook Group](https://www.facebook.com/groups/opensourcecornell)
-  * [Slack chat](https://opensourcecornell.slack.com/signup)
-  * freenode IRC: #opensourcecornell
+## OpenSourceCornell club
+* freenode IRC: #opensourcecornell
+* [Facebook Group](https://www.facebook.com/groups/opensourcecornell)
+* [Slack chat](https://opensourcecornell.slack.com/signup)
