@@ -10,4 +10,5 @@
     <color name="primaryDark">#b31b1b</color>
     <color name="openGreen">#388E3C</color>
     <color name="almostOpenGreen">#81C784</color>
+    <color name="closedColor">#757575</color>
 </resources>
