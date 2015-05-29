@@ -86,6 +86,8 @@ public class DiningListFragment extends SwipeRefreshListFragment {
                 refreshContent();
             }
         });
+
+        getSwipeRefreshLayout().setColorSchemeResources(R.color.primary, R.color.primaryDark);
     }
 
     /**
