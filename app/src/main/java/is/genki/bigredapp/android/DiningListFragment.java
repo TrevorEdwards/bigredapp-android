@@ -358,7 +358,7 @@ public class DiningListFragment extends SwipeRefreshListFragment {
         } else if (isAlmostOpen) {
             textColor = res.getColor(R.color.almostOpenGreen);
         } else {
-            textColor = mTextColor;
+            textColor = res.getColor(R.color.closedColor);
         }
         hoursTextView.setTextColor(textColor);
     }
