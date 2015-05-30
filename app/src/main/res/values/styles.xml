@@ -6,12 +6,17 @@
         <item name="colorPrimaryDark">@color/primaryDark</item>
     </style>
 
-    <style name="ToolbarTheme">
+    <style name="ToolbarBase">
+        <!-- Base theme, to avoid duplication of values in values-v21 -->
         <!--Style it like Theme.Light.DarkActionBar: http://stackoverflow.com/questions/26503149-->
         <item name="theme">@style/ThemeOverlay.AppCompat.Dark.ActionBar</item>
         <item name="popupTheme">@style/ThemeOverlay.AppCompat.Light</item>
         <item name="android:minHeight">?attr/actionBarSize</item>
         <item name="android:background">?attr/colorPrimary</item>
+    </style>
+
+    <style name="ToolbarTheme" parent="ToolbarBase">
+        <!-- Actual theme to apply to Toolbar -->
     </style>
 
     <color name="primary">#ef4035</color>
