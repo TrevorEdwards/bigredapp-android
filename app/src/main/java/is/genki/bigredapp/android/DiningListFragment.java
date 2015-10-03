@@ -161,13 +161,13 @@ public class DiningListFragment extends SwipeRefreshListFragment {
 
             // parse the calendar data into an ArrayList<NameCalEventList>
             int mDiningListLen = mDiningList.length();
-            for (int i=0; i<mDiningListLen; i++) {
+            for (int i = 0; i < mDiningListLen; i++) {
                 String name = (String) mDiningList.get(i);
 
                 JSONArray jsonEventList = response.getJSONArray(name);
                 int jsonEventListLen = jsonEventList.length();
                 ArrayList<CalEvent> calEventList = new ArrayList<>();
-                for (int j=0; j<jsonEventListLen; j++) {
+                for (int j = 0; j < jsonEventListLen; j++) {
                     JSONObject jsonEvent = jsonEventList.getJSONObject(j);
 
                     CalEvent calEvent = new CalEvent();
@@ -214,7 +214,7 @@ public class DiningListFragment extends SwipeRefreshListFragment {
     }
 
     // helper for getDiningCalendarEvents()
-    private static String getRequestCalFormat (Calendar cal) {
+    private static String getRequestCalFormat(Calendar cal) {
         return cal.getDisplayName(Calendar.MONTH, Calendar.SHORT, Locale.US) +
                 cal.get(Calendar.DAY_OF_MONTH) + "," + cal.get(Calendar.YEAR);
     }
@@ -228,8 +228,8 @@ public class DiningListFragment extends SwipeRefreshListFragment {
         try {
             final StringBuilder builder = new StringBuilder();
             int len = mDiningList.length();
-            for (int i=0; i<len; i++) {
-                    builder.append(mDiningList.get(i)).append(',');
+            for (int i = 0; i < len; i++) {
+                builder.append(mDiningList.get(i)).append(',');
             }
             final String commaSeparatedDiningHalls = builder.toString();
 
@@ -313,7 +313,7 @@ public class DiningListFragment extends SwipeRefreshListFragment {
      * If we are before it, we stop, saying we are closed until the event starts.
      * If we are in it, we stop, saying we are open until the event ends.
      * If nothing is found (this is looping through the next NUM_DAYS_OF_EVENTS_TO_GET days),
-     *  then just return "closed".
+     * then just return "closed".
      */
     private static void setHoursText(TextView hoursTextView, Calendar rightNow,
                                      ArrayList<CalEvent> calEventList) {
