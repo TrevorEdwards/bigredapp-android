@@ -400,8 +400,7 @@ public class DiningListFragment extends SwipeRefreshListFragment {
 
         final int mResource;
         final LayoutInflater mInflater;
-        final Pattern p = Pattern.compile("\\b([a-z])");
-        final Calendar mRightNowCal;
+        Calendar mRightNowCal;
 
         public DiningHallListAdapter(Context context, int res, ArrayList<NameCalEventList> items) {
             super(context, res, items);
@@ -413,6 +412,7 @@ public class DiningListFragment extends SwipeRefreshListFragment {
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
             NameCalEventList nameCalEventList = getItem(position);
+            mRightNowCal = Calendar.getInstance();
 
             // http://developer.android.com/training/improving-layouts/smooth-scrolling.html#ViewHolder
             // http://lucasr.org/2012/04/05/performance-tips-for-androids-listview/
