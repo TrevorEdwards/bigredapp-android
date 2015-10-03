@@ -66,7 +66,8 @@ public class DiningLocationActivity extends ActionBarActivity {
             mFragment = (LocationInfoFragment)
                     getSupportFragmentManager().getFragment(savedInstanceState, KEY_FRAGMENT);
         }
-        setTitle(mDiningHall);
+        //Shamelessly stolen from DiningListFragment to beautify name
+        setTitle(DiningListFragment.formatDiningHallName(mDiningHall));
     }
 
     /**
@@ -91,7 +92,7 @@ public class DiningLocationActivity extends ActionBarActivity {
                                 JSONArray jsonArray = mealObject.getJSONArray(mDiningHall);
                                 int len = jsonArray.length();
                                 for (int i = 0; i < len; i++) {
-                                    if (i != 0) menu.append(", ");
+                                    if (i != 0) menu.append("\n");
                                     menu.append(jsonArray.getJSONObject(i).getString("name"));
                                 }
                                 menus.add(new MealMenu(meal, menu.toString()));

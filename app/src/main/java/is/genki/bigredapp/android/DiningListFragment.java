@@ -112,8 +112,7 @@ public class DiningListFragment extends SwipeRefreshListFragment {
     @Override
     public void onListItemClick(ListView l, View v, int position, long id) {
         super.onListItemClick(l, v, position, id);
-        try {
-            String diningHall = (String) mDiningList.get(position);
+            String diningHall = ((DiningHallListAdapter.DiningListViewHolder) v.getTag()).diningHallName;
             Intent intent = new Intent(mContext, DiningLocationActivity.class);
             intent.putExtra(DiningLocationActivity.KEY_DINING_HALL, diningHall);
 
@@ -121,9 +120,6 @@ public class DiningListFragment extends SwipeRefreshListFragment {
             ActivityOptionsCompat options = ActivityOptionsCompat.makeScaleUpAnimation(
                     v, 0, 0, v.getWidth(), v.getHeight());
             mContext.startActivity(intent, options.toBundle());
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
     }
 
     /**
@@ -426,9 +422,11 @@ public class DiningListFragment extends SwipeRefreshListFragment {
                 holder = new DiningListViewHolder();
                 holder.nameTextView = (TextView) convertView.findViewById(R.id.dining_list_row_name);
                 holder.hoursTextView = (TextView) convertView.findViewById(R.id.dining_list_row_hours);
+                holder.diningHallName = nameCalEventList.name;
                 convertView.setTag(holder);
             } else {
                 holder = (DiningListViewHolder) convertView.getTag();
+                holder.diningHallName = nameCalEventList.name;
             }
 
             if (mTextColor == 0) {
@@ -438,15 +436,7 @@ public class DiningListFragment extends SwipeRefreshListFragment {
             setHoursText(holder.hoursTextView, mRightNowCal, nameCalEventList.calEventList);
 
             // parse the name to make it pretty
-            String name = nameCalEventList.name;
-            name = name.replace("_", " ");
-            Matcher m = p.matcher(name);
-            StringBuffer sb = new StringBuffer();
-            while (m.find()) {
-                m.appendReplacement(sb, m.group(1).toUpperCase());
-            }
-            m.appendTail(sb);
-            holder.nameTextView.setText(sb.toString());
+            holder.nameTextView.setText(formatDiningHallName(nameCalEventList.name));
 
             return convertView;
         }
@@ -455,7 +445,26 @@ public class DiningListFragment extends SwipeRefreshListFragment {
         class DiningListViewHolder {
             TextView nameTextView;
             TextView hoursTextView;
+            String diningHallName;
         }
+    }
+
+    /**
+     * Converts the API's badly formatted string to something nicer (atrium_cafe becomes Atrium Cafe)
+     *
+     * @param name the name to be formatted
+     * @return the formatted name
+     */
+    protected static String formatDiningHallName(String name) {
+        final Pattern p = Pattern.compile("\\b([a-z])");
+        name = name.replace("_", " ");
+        Matcher m = p.matcher(name);
+        StringBuffer sb = new StringBuffer();
+        while (m.find()) {
+            m.appendReplacement(sb, m.group(1).toUpperCase());
+        }
+        m.appendTail(sb);
+        return sb.toString();
     }
 
     /**
