@@ -198,6 +198,8 @@ public class DiningListFragment extends SwipeRefreshListFragment {
             }
 
             ArrayAdapter<NameCalEventList> adapter = (ArrayAdapter<NameCalEventList>) getListAdapter();
+            //Order by what's open
+            Collections.sort(nameCalEventLists);
             if (adapter == null) {
                 adapter = new DiningHallListAdapter(mContext, R.layout.dining_list_row, nameCalEventLists);
                 setListAdapter(adapter);
@@ -376,7 +378,7 @@ public class DiningListFragment extends SwipeRefreshListFragment {
         }
     }
 
-    public static class NameCalEventList {
+    public static class NameCalEventList implements Comparable<NameCalEventList> {
         public final String name;
         public final ArrayList<CalEvent> calEventList;
 
@@ -384,6 +386,14 @@ public class DiningListFragment extends SwipeRefreshListFragment {
             this.name = name;
             this.calEventList = calEventList;
         }
+
+        public int compareTo(@NonNull NameCalEventList cOther) {
+            Calendar rightNow = Calendar.getInstance();
+            int thisStatus = calToRatingInt(rightNow, calEventList);
+            int otherStatus = calToRatingInt(rightNow, cOther.calEventList);
+            return otherStatus - thisStatus;
+        }
+
     }
 
     /**
@@ -446,5 +456,38 @@ public class DiningListFragment extends SwipeRefreshListFragment {
             TextView nameTextView;
             TextView hoursTextView;
         }
+    }
+
+    /**
+     * Assigns a rating to a calendar's times to right now where 2 is currently open, 1 is almost open, 0 is closed.
+     *
+     * @param rightNow     the current calendar instance
+     * @param calEventList the calendar event list to be processed
+     * @return the rating
+     */
+    private static int calToRatingInt(Calendar rightNow, ArrayList<CalEvent> calEventList) {
+        int status = 0;
+        for (CalEvent e : calEventList) {
+            Calendar startCal = e.startCal;
+            Calendar endCal = e.endCal;
+            if (rightNow.after(startCal) && rightNow.before(endCal)) {
+                status = 2;
+                break; // stop loop here
+            } else if (rightNow.before(startCal)) {
+                String dayText = "";
+                int eventDayOfWeek = startCal.get(Calendar.DAY_OF_WEEK);
+                int rightNowDayOfWeek = rightNow.get(Calendar.DAY_OF_WEEK);
+
+                int dayDiff = eventDayOfWeek - rightNowDayOfWeek; // difference in day between event and today
+                if (dayDiff == 0) {
+                    if (startCal.get(Calendar.HOUR_OF_DAY) - rightNow.get(Calendar.HOUR_OF_DAY) <= 2) {
+                        status = 1;
+                    }
+                    break; // stop loop here
+                }
+                break; // stop loop here
+            }
+        }
+        return status;
     }
 }
