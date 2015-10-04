@@ -1,6 +1,9 @@
 .gradle
-/local.properties
-/.idea/workspace.xml
-/.idea/libraries
 .DS_Store
-/build
+build
+bigredapp-android.iml
+local.properties
+.idea/workspace.xml
+.idea/libraries
+.idea/runConfigurations.xml
+app/app.iml
