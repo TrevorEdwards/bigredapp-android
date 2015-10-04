@@ -17,10 +17,9 @@ import android.widget.ListView;
 import com.android.volley.RequestQueue;
 
 
-public class MainActivity extends ActionBarActivity {
+public class MainActivity extends ActionBarActivity  {
 
     private String[] mAppActivities;
-    private CharSequence mTitle;
     private DrawerLayout mDrawerLayout;
     private ListView mDrawerList;
 
@@ -83,8 +82,18 @@ public class MainActivity extends ActionBarActivity {
 
     /** Swaps fragments in the main content view */
     private void selectItem(int position) {
-        // Create a new fragment and specify the planet to show based on position
-        Fragment fragment = new DiningListFragment();
+        Fragment fragment;
+        // Create a new fragment based on what we selected
+        switch (position) {
+            case 0:
+                fragment = new DiningListFragment();
+                break;
+            case 1:
+                fragment = new MapActivity();
+                break;
+            default:
+                fragment = new DiningListFragment();
+        }
         Bundle args = new Bundle();
         //args.putInt(DiningListFragment.ARG_PLANET_NUMBER, position);
         fragment.setArguments(args);
@@ -98,11 +107,5 @@ public class MainActivity extends ActionBarActivity {
         mDrawerList.setItemChecked(position, true);
         setTitle(mAppActivities[position]);
         mDrawerLayout.closeDrawer(mDrawerList);
-    }
-
-    @Override
-    public void setTitle(CharSequence title) {
-        mTitle = title;
-        getActionBar().setTitle(mTitle);
     }
 }
