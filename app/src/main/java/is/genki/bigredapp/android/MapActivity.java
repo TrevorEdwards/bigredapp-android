@@ -7,6 +7,10 @@ import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 
+import com.android.volley.Request;
+import com.android.volley.Response;
+import com.android.volley.toolbox.JsonArrayRequest;
+import com.android.volley.toolbox.JsonObjectRequest;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -15,6 +19,13 @@ import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.MarkerOptions;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.ArrayList;
+import java.util.List;
 
 //https://developers.google.com/android/reference/com/google/android/gms/maps/GoogleMap
 public class MapActivity extends SupportMapFragment implements OnMapReadyCallback {
@@ -69,6 +80,34 @@ public class MapActivity extends SupportMapFragment implements OnMapReadyCallbac
         // Let's make mcgraw tower the center
         mMap.addMarker(new MarkerOptions().position(mcgraw).title("McGraw Tower"));
        // mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(CORNELL.getCenter(), 14));
-        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(mcgraw,17));
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(mcgraw, 17));
+        getBuildingData();
+    }
+
+    private void getBuildingData() {
+        if (SingletonRequestQueue.isConnected(mContext)) {
+            final String buildingURL = "https://cornelldata.org/api/v0/map-data/buildings";
+            JsonArrayRequest jsonArrRequest = (JsonArrayRequest)
+                    new JsonArrayRequest(Request.Method.GET, buildingURL,
+                            new Response.Listener<JSONArray>() {
+                                @Override
+                                public void onResponse(JSONArray response) {
+                                    try {
+                                        int length = response.length();
+                                        for( int i = 0; i < length; i++ ){
+                                            JSONObject build = response.getJSONObject(i);
+                                            String name = build.getString("Name");
+                                            double lat = Double.parseDouble(build.getString("Latitude"));
+                                            double lon = Double.parseDouble(build.getString("Longitude"));
+                                            mMap.addMarker(new MarkerOptions().position(new LatLng(lat, lon)).title(name));
+                                        }
+                                    } catch (JSONException e) {
+                                        //Do nothing
+                                    }
+                                }
+                            }, SingletonRequestQueue.getErrorListener(mContext))
+                            .setRetryPolicy(SingletonRequestQueue.getRetryPolicy());
+            SingletonRequestQueue.getInstance(mContext).addToRequestQueue(jsonArrRequest);
+        }
     }
 }
