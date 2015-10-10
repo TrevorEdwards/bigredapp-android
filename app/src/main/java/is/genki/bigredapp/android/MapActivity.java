@@ -63,23 +63,10 @@ public class MapActivity extends SupportMapFragment implements OnMapReadyCallbac
         //setup variables we want
         mMap.setBuildingsEnabled(true);
         LatLng mcgraw = new LatLng(42.447587, -76.485013);
+        mMap.setMyLocationEnabled(true); //Show where the user is
 
-        //Rotate the camera to 45 degrees
-        mMap.setOnCameraChangeListener(new GoogleMap.OnCameraChangeListener() {
-            @Override
-            public void onCameraChange(CameraPosition position) {
-                mMap.animateCamera(CameraUpdateFactory.newCameraPosition(
-                        new CameraPosition.Builder()
-                                .target(position.target)
-                                .tilt(30)
-                                .zoom(position.zoom)
-                                .build()));
-            }
-        });
 
         // Let's make mcgraw tower the center
-        mMap.addMarker(new MarkerOptions().position(mcgraw).title("McGraw Tower"));
-       // mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(CORNELL.getCenter(), 14));
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(mcgraw, 17));
         getBuildingData();
     }
