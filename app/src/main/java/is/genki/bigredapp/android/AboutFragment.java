@@ -15,7 +15,7 @@ import android.widget.TextView;
  * A simple activity to give the user some information about the app.
  */
 
-public class AboutActivity extends Fragment {
+public class AboutFragment extends Fragment {
 
     private static ActionBarActivity mContext;
     private LayoutInflater mInflater;

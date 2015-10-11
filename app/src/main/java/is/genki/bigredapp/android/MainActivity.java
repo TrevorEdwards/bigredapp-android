@@ -1,7 +1,5 @@
 package is.genki.bigredapp.android;
 
-import android.app.Activity;
-import android.app.FragmentManager;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -141,7 +139,7 @@ public class MainActivity extends ActionBarActivity  {
                 showOption(R.id.action_filter);
                 break;
             case 2:
-                fragment = new AboutActivity();
+                fragment = new AboutFragment();
                 hideOption(R.id.action_search);
                 hideOption(R.id.action_filter);
                 break;

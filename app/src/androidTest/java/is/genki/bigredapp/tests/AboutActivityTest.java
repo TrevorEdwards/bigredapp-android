@@ -3,20 +3,20 @@ package is.genki.bigredapp.tests;
 import android.test.ActivityInstrumentationTestCase2;
 import android.widget.TextView;
 
-import is.genki.bigredapp.android.AboutActivity;
+import is.genki.bigredapp.android.AboutFragment;
 import is.genki.bigredapp.android.R;
 
 /**
  * A sample of the testing we could be doing on an activity that doesn't need testing.
  * https://developer.android.com/training/activity-testing/activity-basic-testing.html
  */
-public class AboutActivityTest extends ActivityInstrumentationTestCase2<AboutActivity> {
+public class AboutActivityTest extends ActivityInstrumentationTestCase2<AboutFragment> {
 
-    private AboutActivity myAboutActivity;
+    private AboutFragment myAboutActivity;
     private TextView aboutText;
 
     public AboutActivityTest(){
-        super(AboutActivity.class);
+        super(AboutFragment.class);
     }
 
     public void testPreconditions() {
