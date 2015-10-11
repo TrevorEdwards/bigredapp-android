@@ -5,6 +5,7 @@
     <string name="action_search">Search</string>
     <string name="drawer_open">Open Drawer</string>
     <string name="drawer_close">Close Drawer</string>
+    <string name="search_hint">ex: ives, baker, risley...</string>
     <string name="title_activity_dining_location">DiningLocationActivity</string>
 
     <string name="no_menu_available">No menus available for here, yet! But check out an all-you-can-eat place!</string>
@@ -16,4 +17,5 @@
     <string name="about_or_email">Or, send an email to:</string>
     <string name="about_support_email">gsm75@cornell.edu</string>
     <string name="about_open_source_is_great">This app will always be free and open source.</string>
+    <string name="title_activity_map_search">MapSearchActivity</string>
 </resources>
