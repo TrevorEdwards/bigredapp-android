@@ -19,9 +19,9 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 //https://developers.google.com/android/reference/com/google/android/gms/maps/GoogleMap
-public class MapActivity extends SupportMapFragment implements OnMapReadyCallback {
+public class MapFragment extends SupportMapFragment implements OnMapReadyCallback {
 
-    private GoogleMap mMap;
+    public static GoogleMap mMap;
     private static ActionBarActivity mContext;
     private LatLngBounds CORNELL = new LatLngBounds (new LatLng(42.401988, -76.522393), new LatLng(42.501668, -76.432340));
 

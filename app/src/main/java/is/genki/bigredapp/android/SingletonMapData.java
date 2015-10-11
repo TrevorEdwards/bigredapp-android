@@ -23,6 +23,7 @@ public class SingletonMapData {
         mapLocations = new HashMap<>();
     }
 
+
     public void addLocation(String category, String name, double lat, double lon){
         if( mapLocations.containsKey(category)){
             mapLocations.get(category).put(name, new Pair(lat,lon));

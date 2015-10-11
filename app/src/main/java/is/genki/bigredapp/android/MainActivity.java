@@ -104,7 +104,7 @@ public class MainActivity extends ActionBarActivity  {
                 setMapEnabled(false);
                 break;
             case 1:
-                fragment = new MapActivity();
+                fragment = new MapFragment();
                 setMapEnabled(true);
                 break;
             case 2:
@@ -208,4 +208,6 @@ public class MainActivity extends ActionBarActivity  {
             hideOption(R.id.action_filter);
         }
     }
+
+
 }

@@ -4,14 +4,15 @@ import android.app.ListActivity;
 import android.app.SearchManager;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v4.util.Pair;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
+import android.support.v7.app.ActionBarActivity;
 import android.view.View;
-import android.widget.ListAdapter;
+import android.widget.ListView;
 import android.widget.SimpleAdapter;
+
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -19,6 +20,9 @@ import java.util.List;
 import java.util.Map;
 
 public class MapSearchActivity extends ListActivity {
+
+    private ArrayList<Map.Entry<String,Pair<Double,Double>>> coords;
+    private ActionBarActivity mContext;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -34,8 +38,10 @@ public class MapSearchActivity extends ListActivity {
         }
     }
 
+
     private void doMySearch( String query ){
 
+        coords = new ArrayList<>();
         String[] from = new String[] {"locname"};
         int[] to = new int[] { R.id.item1 };
 
@@ -45,6 +51,7 @@ public class MapSearchActivity extends ListActivity {
         for(Map.Entry<String,Pair<Double,Double>> ent : results){
             HashMap<String, String> map = new HashMap<>();
             map.put("locname", ent.getKey());
+            coords.add(ent);
             fillMaps.add(map);
         }
 
@@ -52,6 +59,19 @@ public class MapSearchActivity extends ListActivity {
 
         // Bind to our new adapter.
         setListAdapter(adapter);
+    }
+
+    @Override
+    protected void onListItemClick (ListView l, View v, int position, long id) {
+        MapFragment.mMap.clear();
+        LatLng loc = new LatLng(coords.get(position).getValue().first, coords.get(position).getValue().second);
+        MapFragment.mMap.addMarker(
+                new MarkerOptions()
+                        .position(loc)
+                        .title(coords.get(position).getKey()));
+        MapFragment.mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(loc, 17));
+        this.finish();
+
     }
 
 }
