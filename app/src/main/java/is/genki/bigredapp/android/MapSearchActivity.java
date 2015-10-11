@@ -69,7 +69,7 @@ public class MapSearchActivity extends ListActivity {
                 new MarkerOptions()
                         .position(loc)
                         .title(coords.get(position).getKey()));
-        MapFragment.mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(loc, 17));
+        MapFragment.mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(loc, 17),2000,null);
         this.finish();
 
     }
