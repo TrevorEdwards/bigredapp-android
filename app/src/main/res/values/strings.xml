@@ -2,6 +2,9 @@
     <string name="app_name">Big Red App</string>
     <string name="action_about">About</string>
     <string name="action_filter">Filter</string>
+    <string name="action_search">Search</string>
+    <string name="drawer_open">Open Drawer</string>
+    <string name="drawer_close">Close Drawer</string>
     <string name="title_activity_dining_location">DiningLocationActivity</string>
 
     <string name="no_menu_available">No menus available for here, yet! But check out an all-you-can-eat place!</string>
