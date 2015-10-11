@@ -1,5 +1,6 @@
 package is.genki.bigredapp.android;
 
+import android.app.Activity;
 import android.app.FragmentManager;
 import android.content.Intent;
 import android.os.Bundle;
@@ -22,6 +23,7 @@ public class MainActivity extends ActionBarActivity  {
     private String[] mAppActivities;
     private DrawerLayout mDrawerLayout;
     private ListView mDrawerList;
+    private Menu mOptionsMenu;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,7 +39,7 @@ public class MainActivity extends ActionBarActivity  {
                     .commit();
         }
 
-        mAppActivities = new String[] {"Dining","Maps"};
+        mAppActivities = new String[] {"Dining","Maps","About"};
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         mDrawerList = (ListView) findViewById(R.id.left_drawer);
 
@@ -46,6 +48,9 @@ public class MainActivity extends ActionBarActivity  {
                 R.layout.drawer_list_item, mAppActivities));
         // Set the list's click listener
         mDrawerList.setOnItemClickListener(new DrawerItemClickListener());
+        // Set first item selected and change title
+        mDrawerList.setItemChecked(0, true);
+        setTitle(mAppActivities[0]);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.main_toolbar);
         setSupportActionBar(toolbar);
@@ -55,7 +60,10 @@ public class MainActivity extends ActionBarActivity  {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main, menu);
+        mOptionsMenu = menu;
+        getMenuInflater().inflate(R.menu.menu_main, mOptionsMenu);
+        hideOption(R.id.action_search);
+        hideOption(R.id.action_filter);
         return true;
     }
 
@@ -66,9 +74,7 @@ public class MainActivity extends ActionBarActivity  {
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-        if (id == R.id.action_about) {
-            this.startActivity(new Intent(this, AboutActivity.class));
-        }
+        //Do nothing
 
         return super.onOptionsItemSelected(item);
     }
@@ -82,30 +88,58 @@ public class MainActivity extends ActionBarActivity  {
 
     /** Swaps fragments in the main content view */
     private void selectItem(int position) {
-        Fragment fragment;
-        // Create a new fragment based on what we selected
+        Fragment fragment = null;
+        Class act = null;
+        // Create a new fragment or activity based on what we selected
         switch (position) {
             case 0:
                 fragment = new DiningListFragment();
+                hideOption(R.id.action_search);
+                hideOption(R.id.action_filter);
                 break;
             case 1:
                 fragment = new MapActivity();
+                showOption(R.id.action_search);
+                showOption(R.id.action_filter);
+                break;
+            case 2:
+                fragment = new AboutActivity();
+                hideOption(R.id.action_search);
+                hideOption(R.id.action_filter);
                 break;
             default:
                 fragment = new DiningListFragment();
         }
-        Bundle args = new Bundle();
-        //args.putInt(DiningListFragment.ARG_PLANET_NUMBER, position);
-        fragment.setArguments(args);
+        if( fragment != null){
 
-        // Insert the fragment by replacing any existing fragment
-        getSupportFragmentManager().beginTransaction()
-                .replace(R.id.container, fragment)
-                .commit();
+            Bundle args = new Bundle();
+            fragment.setArguments(args);
+
+            // Insert the fragment by replacing any existing fragment
+            getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.container, fragment)
+                    .commit();
+
+        } else if (act != null){
+            this.startActivity(new Intent(this, act));
+        }
+
 
         // Highlight the selected item, update the title, and close the drawer
         mDrawerList.setItemChecked(position, true);
         setTitle(mAppActivities[position]);
         mDrawerLayout.closeDrawer(mDrawerList);
+    }
+
+    private void hideOption(int id)
+    {
+        MenuItem item = mOptionsMenu.findItem(id);
+        item.setVisible(false);
+    }
+
+    private void showOption(int id)
+    {
+        MenuItem item = mOptionsMenu.findItem(id);
+        item.setVisible(true);
     }
 }
