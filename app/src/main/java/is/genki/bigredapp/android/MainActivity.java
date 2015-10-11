@@ -39,47 +39,7 @@ public class MainActivity extends ActionBarActivity  {
                     .commit();
         }
 
-        mAppActivities = new String[] {"Dining","Maps","About"};
-        mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
-        mDrawerList = (ListView) findViewById(R.id.left_drawer);
-
-        // Set the adapter for the list view
-        mDrawerList.setAdapter(new ArrayAdapter<String>(this,
-                R.layout.drawer_list_item, mAppActivities));
-        // Set the list's click listener
-        mDrawerList.setOnItemClickListener(new DrawerItemClickListener());
-        // Set first item selected and change title
-        mDrawerList.setItemChecked(0, true);
-        setTitle(mAppActivities[0]);
-
-        Toolbar toolbar = (Toolbar) findViewById(R.id.main_toolbar);
-        setSupportActionBar(toolbar);
-
-        //Set up hamburger menu
-         mDrawerToggle = new ActionBarDrawerToggle(
-                this,                  /* host Activity */
-                mDrawerLayout,         /* DrawerLayout object */
-                toolbar, /* our toolbar */
-                R.string.drawer_open,  /* "open drawer" description */
-                R.string.drawer_close  /* "close drawer" description */
-        ) {
-
-            /** Called when a drawer has settled in a completely closed state. */
-            public void onDrawerClosed(View view) {
-                super.onDrawerClosed(view);
-               // getActionBar().setTitle(mTitle);
-            }
-
-            /** Called when a drawer has settled in a completely open state. */
-            public void onDrawerOpened(View drawerView) {
-                super.onDrawerOpened(drawerView);
-               // getActionBar().setTitle(mDrawerTitle);
-            }
-        };
-        // Set the drawer toggle as the DrawerListener
-        mDrawerLayout.setDrawerListener(mDrawerToggle);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setHomeButtonEnabled(true);
+        setupSliderDrawer();
 
     }
 
@@ -89,8 +49,7 @@ public class MainActivity extends ActionBarActivity  {
         // Inflate the menu; this adds items to the action bar if it is present.
         mOptionsMenu = menu;
         getMenuInflater().inflate(R.menu.menu_main, mOptionsMenu);
-        hideOption(R.id.action_search);
-        hideOption(R.id.action_filter);
+        setMapEnabled(false);
         return true;
     }
 
@@ -130,18 +89,15 @@ public class MainActivity extends ActionBarActivity  {
         switch (position) {
             case 0:
                 fragment = new DiningListFragment();
-                hideOption(R.id.action_search);
-                hideOption(R.id.action_filter);
+                setMapEnabled(false);
                 break;
             case 1:
                 fragment = new MapActivity();
-                showOption(R.id.action_search);
-                showOption(R.id.action_filter);
+                setMapEnabled(true);
                 break;
             case 2:
                 fragment = new AboutFragment();
-                hideOption(R.id.action_search);
-                hideOption(R.id.action_filter);
+                setMapEnabled(false);
                 break;
             default:
                 fragment = new DiningListFragment();
@@ -177,5 +133,67 @@ public class MainActivity extends ActionBarActivity  {
     {
         MenuItem item = mOptionsMenu.findItem(id);
         item.setVisible(true);
+    }
+
+    /**
+     * Slider drawer setup factored out for readability
+     */
+    private void setupSliderDrawer(){
+
+        mAppActivities = new String[] {"Dining","Maps","About"};
+        mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+        mDrawerList = (ListView) findViewById(R.id.left_drawer);
+
+        // Set the adapter for the list view
+        mDrawerList.setAdapter(new ArrayAdapter<String>(this,
+                R.layout.drawer_list_item, mAppActivities));
+        // Set the list's click listener
+        mDrawerList.setOnItemClickListener(new DrawerItemClickListener());
+        // Set first item selected and change title
+        mDrawerList.setItemChecked(0, true);
+        setTitle(mAppActivities[0]);
+
+        Toolbar toolbar = (Toolbar) findViewById(R.id.main_toolbar);
+        setSupportActionBar(toolbar);
+
+        //Set up hamburger menu
+        mDrawerToggle = new ActionBarDrawerToggle(
+                this,                  /* host Activity */
+                mDrawerLayout,         /* DrawerLayout object */
+                toolbar, /* our toolbar */
+                R.string.drawer_open,  /* "open drawer" description */
+                R.string.drawer_close  /* "close drawer" description */
+        ) {
+
+            /** Called when a drawer has settled in a completely closed state. */
+            public void onDrawerClosed(View view) {
+                super.onDrawerClosed(view);
+                // getActionBar().setTitle(mTitle);
+            }
+
+            /** Called when a drawer has settled in a completely open state. */
+            public void onDrawerOpened(View drawerView) {
+                super.onDrawerOpened(drawerView);
+                // getActionBar().setTitle(mDrawerTitle);
+            }
+        };
+        // Set the drawer toggle as the DrawerListener
+        mDrawerLayout.setDrawerListener(mDrawerToggle);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setHomeButtonEnabled(true);
+
+    }
+
+    /**
+     *  Sets up the toolbar for the menu fragment
+     */
+    private void setMapEnabled(boolean enab){
+        if( enab ){
+            showOption(R.id.action_search);
+            showOption(R.id.action_filter);
+        }else{
+            hideOption(R.id.action_search);
+            hideOption(R.id.action_filter);
+        }
     }
 }
