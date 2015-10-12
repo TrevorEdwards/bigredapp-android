@@ -5,11 +5,13 @@ import android.support.v4.util.Pair;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Holds data for maps to be accessed between activities
  */
 public class SingletonMapData {
+
     private static SingletonMapData ourInstance = new SingletonMapData();
     //Double hashmap for category of location and location info
     //EX: <Buildings,<Ives,(42.32,53.432)>>
@@ -36,6 +38,10 @@ public class SingletonMapData {
 
     public HashMap<String,Pair<Double,Double>> mapForCategory(String category){
         return mapLocations.get(category);
+    }
+
+    public Set<String> getCategories(){
+        return mapLocations.keySet();
     }
 
     /**

@@ -19,6 +19,8 @@ import android.widget.ListView;
 
 import com.android.volley.RequestQueue;
 
+import java.util.logging.Filter;
+
 
 public class MainActivity extends ActionBarActivity  {
 
@@ -74,6 +76,8 @@ public class MainActivity extends ActionBarActivity  {
 
         if (mDrawerToggle.onOptionsItemSelected(item)) {
             return true;
+        }else if( item.getItemId() == R.id.action_filter){
+            this.startActivity(new Intent(this, FilterChooserActivity.class));
         }
 
         return super.onOptionsItemSelected(item);

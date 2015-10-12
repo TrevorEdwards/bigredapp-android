@@ -25,6 +25,7 @@ public class MapFragment extends SupportMapFragment implements OnMapReadyCallbac
     private static ActionBarActivity mContext;
     private LatLngBounds CORNELL = new LatLngBounds (new LatLng(42.401988, -76.522393), new LatLng(42.501668, -76.432340));
 
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -34,7 +35,9 @@ public class MapFragment extends SupportMapFragment implements OnMapReadyCallbac
         SupportMapFragment mapFragment = (SupportMapFragment) mContext.getSupportFragmentManager()
                 .findFragmentById(R.id.container);
         //Preload data for map
-        getMapData();
+        if( SingletonMapData.getInstance().getCategories().size() == 0)
+            getMapData();
+
         mapFragment.getMapAsync(this);
     }
 
@@ -82,7 +85,7 @@ public class MapFragment extends SupportMapFragment implements OnMapReadyCallbac
                                             String name = build.getString("Name");
                                             double lat = Double.parseDouble(build.getString("Latitude"));
                                             double lon = Double.parseDouble(build.getString("Longitude"));
-                                            SingletonMapData.getInstance().addLocation("buildings",name,lat,lon);
+                                            SingletonMapData.getInstance().addLocation("Buildings",name,lat,lon);
                                         }
                                     } catch (JSONException e) {
                                         //Do nothing
@@ -104,7 +107,7 @@ public class MapFragment extends SupportMapFragment implements OnMapReadyCallbac
                                             String name = "Bike Rack " + i; //for unique hashing
                                             double lat = Double.parseDouble(build.getString("Latitude"));
                                             double lon = Double.parseDouble(build.getString("Longitude"));
-                                            SingletonMapData.getInstance().addLocation("bikeracks",name,lat,lon);
+                                            SingletonMapData.getInstance().addLocation("Bike Racks",name,lat,lon);
                                         }
                                     } catch (JSONException e) {
                                         //Do nothing
@@ -126,7 +129,7 @@ public class MapFragment extends SupportMapFragment implements OnMapReadyCallbac
                                             String name = build.getString("Name");
                                             double lat = Double.parseDouble(build.getString("Latitude"));
                                             double lon = Double.parseDouble(build.getString("Longitude"));
-                                            SingletonMapData.getInstance().addLocation("busstops",name,lat,lon);
+                                            SingletonMapData.getInstance().addLocation("Bus Stops",name,lat,lon);
                                         }
                                     } catch (JSONException e) {
                                         //Do nothing
