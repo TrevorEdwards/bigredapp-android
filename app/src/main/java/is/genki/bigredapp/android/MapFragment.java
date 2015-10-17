@@ -2,6 +2,7 @@ package is.genki.bigredapp.android;
 
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
+import android.util.Pair;
 
 import com.android.volley.Request;
 import com.android.volley.Response;
@@ -23,7 +24,7 @@ public class MapFragment extends SupportMapFragment implements OnMapReadyCallbac
 
     public static GoogleMap mMap;
     private static ActionBarActivity mContext;
-    private LatLngBounds CORNELL = new LatLngBounds (new LatLng(42.401988, -76.522393), new LatLng(42.501668, -76.432340));
+    private LatLngBounds CORNELL = new LatLngBounds(new LatLng(42.401988, -76.522393), new LatLng(42.501668, -76.432340));
 
 
     @Override
@@ -35,7 +36,7 @@ public class MapFragment extends SupportMapFragment implements OnMapReadyCallbac
         SupportMapFragment mapFragment = (SupportMapFragment) mContext.getSupportFragmentManager()
                 .findFragmentById(R.id.container);
         //Preload data for map
-        if( SingletonMapData.getInstance().getCategories().size() == 0)
+        if (SingletonMapData.getInstance().getCategories().size() == 0)
             getMapData();
 
         mapFragment.getMapAsync(this);
@@ -70,74 +71,42 @@ public class MapFragment extends SupportMapFragment implements OnMapReadyCallbac
      */
     private void getMapData() {
         if (SingletonRequestQueue.isConnected(mContext)) {
-            final String buildingURL = "https://cornelldata.org/api/v0/map-data/buildings";
-            final String bikeRackURL = "https://cornelldata.org/api/v0/map-data/bikeracks";
-            final String tcatStopURL = "https://cornelldata.org/api/v0/TCAT-data/stop-locations";
-            JsonArrayRequest jsonArrRequest = (JsonArrayRequest)
-                    new JsonArrayRequest(Request.Method.GET, buildingURL,
-                            new Response.Listener<JSONArray>() {
-                                @Override
-                                public void onResponse(JSONArray response) {
-                                    try {
-                                        int length = response.length();
-                                        for( int i = 0; i < length; i++ ){
-                                            JSONObject build = response.getJSONObject(i);
-                                            String name = build.getString("Name");
-                                            double lat = Double.parseDouble(build.getString("Latitude"));
-                                            double lon = Double.parseDouble(build.getString("Longitude"));
-                                            SingletonMapData.getInstance().addLocation("Buildings",name,lat,lon);
-                                        }
-                                    } catch (JSONException e) {
-                                        //Do nothing
-                                    }
-                                }
-                            }, SingletonRequestQueue.getErrorListener(mContext))
-                            .setRetryPolicy(SingletonRequestQueue.getRetryPolicy());
-            SingletonRequestQueue.getInstance(mContext).addToRequestQueue(jsonArrRequest);
+            final Pair<String, String>[] urls = new Pair[]{
+                    new Pair<String, String>("Building", "https://cornelldata.org/api/v0/map-data/buildings"),
+                    new Pair<String, String>("Bike Racks", "https://cornelldata.org/api/v0/map-data/bikeracks"),
+                    new Pair<String, String>("Bus Stops", "https://cornelldata.org/api/v0/TCAT-data/stop-locations"),
+                    new Pair<String, String>("Parking", "https://cornelldata.org/api/v0/map-data/parking")
+            };
 
-            jsonArrRequest = (JsonArrayRequest)
-                    new JsonArrayRequest(Request.Method.GET, bikeRackURL,
-                            new Response.Listener<JSONArray>() {
-                                @Override
-                                public void onResponse(JSONArray response) {
-                                    try {
-                                        int length = response.length();
-                                        for( int i = 0; i < length; i++ ){
-                                            JSONObject build = response.getJSONObject(i);
-                                            String name = "Bike Rack " + i; //for unique hashing
-                                            double lat = Double.parseDouble(build.getString("Latitude"));
-                                            double lon = Double.parseDouble(build.getString("Longitude"));
-                                            SingletonMapData.getInstance().addLocation("Bike Racks",name,lat,lon);
+            for (final Pair<String, String> sp : urls) {
+                JsonArrayRequest jsonArrRequest = (JsonArrayRequest)
+                        new JsonArrayRequest(Request.Method.GET, sp.second,
+                                new Response.Listener<JSONArray>() {
+                                    @Override
+                                    public void onResponse(JSONArray response) {
+                                        try {
+                                            int length = response.length();
+                                            for (int i = 0; i < length; i++) {
+                                                JSONObject build = response.getJSONObject(i);
+                                                double lat = Double.parseDouble(build.getString("Latitude"));
+                                                double lon = Double.parseDouble(build.getString("Longitude"));
+                                                if( sp.first.equals("Bike Racks")){
+                                                    SingletonMapData.getInstance().addLocation(sp.first, "Bike Rack " + i, lat, lon);
+                                                    System.out.println("added a bike rack dog");
+                                                }else {
+                                                    String name = build.getString("Name");
+                                                    SingletonMapData.getInstance().addLocation(sp.first, name, lat, lon);
+                                                }
+                                            }
+                                        } catch (JSONException e) {
+                                            //Do nothing
                                         }
-                                    } catch (JSONException e) {
-                                        //Do nothing
                                     }
-                                }
-                            }, SingletonRequestQueue.getErrorListener(mContext))
-                            .setRetryPolicy(SingletonRequestQueue.getRetryPolicy());
-            SingletonRequestQueue.getInstance(mContext).addToRequestQueue(jsonArrRequest);
+                                }, SingletonRequestQueue.getErrorListener(mContext))
+                                .setRetryPolicy(SingletonRequestQueue.getRetryPolicy());
+                SingletonRequestQueue.getInstance(mContext).addToRequestQueue(jsonArrRequest);
 
-            jsonArrRequest = (JsonArrayRequest)
-                    new JsonArrayRequest(Request.Method.GET, tcatStopURL,
-                            new Response.Listener<JSONArray>() {
-                                @Override
-                                public void onResponse(JSONArray response) {
-                                    try {
-                                        int length = response.length();
-                                        for( int i = 0; i < length; i++ ){
-                                            JSONObject build = response.getJSONObject(i);
-                                            String name = build.getString("Name");
-                                            double lat = Double.parseDouble(build.getString("Latitude"));
-                                            double lon = Double.parseDouble(build.getString("Longitude"));
-                                            SingletonMapData.getInstance().addLocation("Bus Stops",name,lat,lon);
-                                        }
-                                    } catch (JSONException e) {
-                                        //Do nothing
-                                    }
-                                }
-                            }, SingletonRequestQueue.getErrorListener(mContext))
-                            .setRetryPolicy(SingletonRequestQueue.getRetryPolicy());
-            SingletonRequestQueue.getInstance(mContext).addToRequestQueue(jsonArrRequest);
+            }
         }
     }
 }
