@@ -17,7 +17,6 @@ import android.widget.TextView;
 
 import com.android.volley.Request;
 import com.android.volley.Response;
-import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.example.android.swiperefreshlistfragment.SwipeRefreshListFragment;
 
@@ -26,6 +25,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -49,7 +49,7 @@ public class DiningListFragment extends SwipeRefreshListFragment {
     private static final int MS_IN_HOUR = 3600000;
     private static final long MS_IN_2_WEEKS = 1209600000;
 
-    public static final String BASE_URL = "http://redapi-tious.rhcloud.com/dining";
+    public static final String BASE_URL = "http://tangerine-tious.rhcloud.com/dining";
     private static final String DINING_LIST_KEY = "DINING_LIST_KEY";
     private static final String DINING_LIST_DATE_KEY = "DINING_LIST_DATE_KEY";
     private static final String LAST_REFRESHED_KEY = "LAST_REFRESHED_KEY";
@@ -141,7 +141,9 @@ public class DiningListFragment extends SwipeRefreshListFragment {
                 // now we can get the calendar events for the list of dining halls
                 getDiningCalendarEvents();
             } catch (JSONException e) {
-                e.printStackTrace();
+                // There was a format issue, so let's just get a new one.
+                mDiningList = new JSONArray();
+                getDiningList();
             }
         }
     }
@@ -153,17 +155,17 @@ public class DiningListFragment extends SwipeRefreshListFragment {
      * When finished, stops the refreshing indicator.
      */
     private void handleCalendarEventsResponse(JSONObject response) {
-        try {
-            ArrayList<NameCalEventList> nameCalEventLists = new ArrayList<>();
+        ArrayList<NameCalEventList> nameCalEventLists = new ArrayList<>();
 
-            Calendar cal = Calendar.getInstance();
-            int offsetUTC = (TimeZone.getDefault().getOffset(cal.getTimeInMillis())) / MS_IN_HOUR;
+        Calendar cal = Calendar.getInstance();
+        int offsetUTC = (TimeZone.getDefault().getOffset(cal.getTimeInMillis())) / MS_IN_HOUR;
 
-            // parse the calendar data into an ArrayList<NameCalEventList>
-            int mDiningListLen = mDiningList.length();
-            for (int i = 0; i < mDiningListLen; i++) {
-                String name = (String) mDiningList.get(i);
-
+        // parse the calendar data into an ArrayList<NameCalEventList>
+        int mDiningListLen = mDiningList.length();
+        for (int i = 0; i < mDiningListLen; i++) {
+            String name = null;
+            try {
+                name = (String) mDiningList.get(i);
                 JSONArray jsonEventList = response.getJSONArray(name);
                 int jsonEventListLen = jsonEventList.length();
                 ArrayList<CalEvent> calEventList = new ArrayList<>();
@@ -191,21 +193,22 @@ public class DiningListFragment extends SwipeRefreshListFragment {
                 }
                 Collections.sort(calEventList);
                 nameCalEventLists.add(new NameCalEventList(name, calEventList));
+            } catch (Exception e) {
+                // It's okay if a place was not found. Just move on.
+                e.printStackTrace();
             }
+        }
 
-            ArrayAdapter<NameCalEventList> adapter = (ArrayAdapter<NameCalEventList>) getListAdapter();
-            //Order by what's open
-            Collections.sort(nameCalEventLists);
-            if (adapter == null) {
-                adapter = new DiningHallListAdapter(mContext, R.layout.dining_list_row, nameCalEventLists);
-                setListAdapter(adapter);
-            } else {
-                adapter.clear();
-                adapter.addAll(nameCalEventLists);
-                adapter.notifyDataSetChanged();
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
+        ArrayAdapter<NameCalEventList> adapter = (ArrayAdapter<NameCalEventList>) getListAdapter();
+        //Order by what's open
+        Collections.sort(nameCalEventLists);
+        if (adapter == null) {
+            adapter = new DiningHallListAdapter(mContext, R.layout.dining_list_row, nameCalEventLists);
+            setListAdapter(adapter);
+        } else {
+            adapter.clear();
+            adapter.addAll(nameCalEventLists);
+            adapter.notifyDataSetChanged();
         }
         // update the last-refreshed time
         mPreferences.edit().putLong(LAST_REFRESHED_KEY, System.currentTimeMillis()).apply();
@@ -264,20 +267,28 @@ public class DiningListFragment extends SwipeRefreshListFragment {
      */
     private void getDiningList() {
         if (SingletonRequestQueue.isConnected(mContext)) {
-            JsonArrayRequest jsonArrayRequest = (JsonArrayRequest)
-                    new JsonArrayRequest(Request.Method.GET, BASE_URL,
-                    new Response.Listener<JSONArray>() {
+            JsonObjectRequest jsonObjectRequest = (JsonObjectRequest)
+                    new JsonObjectRequest(Request.Method.GET, BASE_URL,
+                    new Response.Listener<JSONObject>() {
                 @Override
-                public void onResponse(JSONArray response) {
+                public void onResponse(JSONObject response) {
                     // cache the result
                     mPreferences.edit().putString(DINING_LIST_KEY, response.toString()).apply();
                     mPreferences.edit().putLong(DINING_LIST_DATE_KEY, System.currentTimeMillis()).apply();
-                    mDiningList = response;
-                    getDiningCalendarEvents();
+                    try {
+                        mDiningList = response.getJSONArray("halls");
+                        JSONArray cafes = response.getJSONArray("cafes");
+                        for (int i = 0; i < cafes.length(); i++) {
+                            mDiningList.put(cafes.get(i));
+                        }
+                        getDiningCalendarEvents();
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
                 }
             }, SingletonRequestQueue.getErrorListener(mContext))
                             .setRetryPolicy(SingletonRequestQueue.getRetryPolicy());
-            SingletonRequestQueue.getInstance(mContext).addToRequestQueue(jsonArrayRequest);
+            SingletonRequestQueue.getInstance(mContext).addToRequestQueue(jsonObjectRequest);
         }
     }
 
