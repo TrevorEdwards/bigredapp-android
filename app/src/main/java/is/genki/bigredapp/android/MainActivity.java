@@ -107,6 +107,7 @@ public class MainActivity extends ActionBarActivity  {
     private void selectItem(int position) {
         Fragment fragment = null;
         Class act = null;
+        selectedDrawer = position;
         // Create a new fragment or activity based on what we selected
         switch (position) {
             case 0:
