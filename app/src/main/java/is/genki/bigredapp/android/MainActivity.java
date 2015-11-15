@@ -38,14 +38,13 @@ public class MainActivity extends ActionBarActivity  {
         // See the "SingletonRequestQueue" class. Initializes the RequestQueue
         //noinspection UnusedAssignment
         RequestQueue queue = SingletonRequestQueue.getInstance(this).getRequestQueue();
+
         if (savedInstanceState == null) {
             getSupportFragmentManager().beginTransaction()
                     .add(R.id.container, new DiningListFragment())
                     .commit();
-
-
-
-
+        } else {
+            System.out.println(savedInstanceState);
         }
 
         setupSliderDrawer();
@@ -160,7 +159,7 @@ public class MainActivity extends ActionBarActivity  {
      */
     private void setupSliderDrawer(){
 
-        mAppActivities = new String[] {"Dining","Maps","About"};
+        mAppActivities = new String[] {"Dining","Map","About"};
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         mDrawerList = (ListView) findViewById(R.id.left_drawer);
 
