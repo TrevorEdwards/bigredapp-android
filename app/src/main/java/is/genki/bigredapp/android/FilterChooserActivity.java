@@ -12,6 +12,8 @@ import android.widget.SimpleAdapter;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.model.BitmapDescriptor;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
@@ -70,16 +72,26 @@ public class FilterChooserActivity extends ListActivity {
         GoogleMap map = MapFragment.mMap;
         map.clear();
         if( !cat.equals("None")) {
+            BitmapDescriptor colorPalette = nameToColor(cat);
             for (Map.Entry<String, Pair<Double, Double>> ent : SingletonMapData.getInstance().mapForCategory(cat).entrySet()) {
                 LatLng coords = (new LatLng(ent.getValue().first, ent.getValue().second));
                 MapFragment.mMap.addMarker(
                         new MarkerOptions()
                                 .position(coords)
-                                .title(ent.getKey()));
+                                .title(ent.getKey())
+                                .icon(colorPalette));
             }
         }
         this.finish();
 
+    }
+
+    /**
+     * Converts a name into a BitMap color
+     * @param name The key for the color conversion
+     */
+    private BitmapDescriptor nameToColor(String name){
+        return BitmapDescriptorFactory.defaultMarker(Math.abs(name.hashCode()) % 360);
     }
 
 }

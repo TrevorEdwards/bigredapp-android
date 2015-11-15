@@ -58,7 +58,7 @@ public class MapFragment extends SupportMapFragment implements OnMapReadyCallbac
 
         //setup variables we want
         mMap.setBuildingsEnabled(true);
-        LatLng mcgraw = new LatLng(42.447587, -76.485013);
+        LatLng mcgraw = new LatLng(42.447587, -76.485013); //centering on mcgraw is very cornell
         mMap.setMyLocationEnabled(true); //Show where the user is
 
 
@@ -91,7 +91,6 @@ public class MapFragment extends SupportMapFragment implements OnMapReadyCallbac
                                                 double lon = Double.parseDouble(build.getString("Longitude"));
                                                 if( sp.first.equals("Bike Racks")){
                                                     SingletonMapData.getInstance().addLocation(sp.first, "Bike Rack " + i, lat, lon);
-                                                    System.out.println("added a bike rack dog");
                                                 }else {
                                                     String name = build.getString("Name");
                                                     SingletonMapData.getInstance().addLocation(sp.first, name, lat, lon);
