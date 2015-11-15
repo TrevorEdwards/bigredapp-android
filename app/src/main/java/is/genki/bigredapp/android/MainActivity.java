@@ -29,6 +29,8 @@ public class MainActivity extends ActionBarActivity  {
     private ListView mDrawerList;
     private Menu mOptionsMenu;
     private ActionBarDrawerToggle mDrawerToggle;
+    private int selectedDrawer;
+    private static final String SELECTED_STRING = "SELECTED_DRAWER";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,6 +47,7 @@ public class MainActivity extends ActionBarActivity  {
                     .commit();
         } else {
             System.out.println(savedInstanceState);
+            selectItem( (Integer) savedInstanceState.get(SELECTED_STRING));
         }
 
         setupSliderDrawer();
@@ -201,6 +204,15 @@ public class MainActivity extends ActionBarActivity  {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeButtonEnabled(true);
 
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle savedInstanceState) {
+        // Save the user's current game state
+        savedInstanceState.putInt(SELECTED_STRING, selectedDrawer);
+
+        // Always call the superclass so it can save the view hierarchy state
+        super.onSaveInstanceState(savedInstanceState);
     }
 
     /**
