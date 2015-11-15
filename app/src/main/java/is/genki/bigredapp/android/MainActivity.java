@@ -42,6 +42,10 @@ public class MainActivity extends ActionBarActivity  {
             getSupportFragmentManager().beginTransaction()
                     .add(R.id.container, new DiningListFragment())
                     .commit();
+
+
+
+
         }
 
         setupSliderDrawer();

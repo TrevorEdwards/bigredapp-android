@@ -264,15 +264,19 @@ public class DiningListFragment extends SwipeRefreshListFragment {
      */
     private void getDiningList() {
         if (SingletonRequestQueue.isConnected(mContext)) {
-            JsonArrayRequest jsonArrayRequest = (JsonArrayRequest)
-                    new JsonArrayRequest(Request.Method.GET, BASE_URL,
-                    new Response.Listener<JSONArray>() {
+            JsonObjectRequest jsonArrayRequest = (JsonObjectRequest)
+                    new JsonObjectRequest(Request.Method.GET, BASE_URL,
+                    new Response.Listener<JSONObject>() {
                 @Override
-                public void onResponse(JSONArray response) {
+                public void onResponse(JSONObject response) {
                     // cache the result
-                    mPreferences.edit().putString(DINING_LIST_KEY, response.toString()).apply();
                     mPreferences.edit().putLong(DINING_LIST_DATE_KEY, System.currentTimeMillis()).apply();
-                    mDiningList = response;
+                    try {
+                        mDiningList = response.getJSONArray("halls");
+                        mPreferences.edit().putString(DINING_LIST_KEY, mDiningList.toString()).apply();
+                    } catch (org.json.JSONException e){
+                        //Do nothing
+                    }
                     getDiningCalendarEvents();
                 }
             }, SingletonRequestQueue.getErrorListener(mContext))
