@@ -72,7 +72,7 @@ public class MapFragment extends SupportMapFragment implements OnMapReadyCallbac
     private void getMapData() {
         if (SingletonRequestQueue.isConnected(mContext)) {
             final Pair<String, String>[] urls = new Pair[]{
-                    new Pair<String, String>("Building", "https://cornelldata.org/api/v0/map-data/buildings"),
+                    new Pair<String, String>("Buildings", "https://cornelldata.org/api/v0/map-data/buildings"),
                     new Pair<String, String>("Bike Racks", "https://cornelldata.org/api/v0/map-data/bikeracks"),
                     new Pair<String, String>("Bus Stops", "https://cornelldata.org/api/v0/TCAT-data/stop-locations")
             };

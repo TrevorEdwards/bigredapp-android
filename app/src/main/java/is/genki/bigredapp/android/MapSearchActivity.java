@@ -9,6 +9,7 @@ import android.support.v7.app.ActionBarActivity;
 import android.view.View;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
+import android.widget.Toast;
 
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.model.LatLng;
@@ -48,6 +49,14 @@ public class MapSearchActivity extends ListActivity {
         // prepare the list of all records
         List<HashMap<String, String>> fillMaps = new ArrayList<>();
         ArrayList<Map.Entry<String,Pair<Double,Double>>> results = SingletonMapData.getInstance().searchString(query);
+
+        //No results, return to map
+        if(results.size() == 0){
+            Toast.makeText(this, "No Results", Toast.LENGTH_LONG).show();
+            this.finish();
+            return;
+        }
+
         for(Map.Entry<String,Pair<Double,Double>> ent : results){
             HashMap<String, String> map = new HashMap<>();
             map.put("locname", ent.getKey());
