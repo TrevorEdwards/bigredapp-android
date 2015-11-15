@@ -47,7 +47,9 @@ public class MainActivity extends ActionBarActivity  {
                     .commit();
         } else {
             System.out.println(savedInstanceState);
-            selectItem( (Integer) savedInstanceState.get(SELECTED_STRING));
+            Object selString = savedInstanceState.get(SELECTED_STRING);
+            if(selString != null && selString instanceof Integer)
+             selectItem( (Integer) selString);
         }
 
         setupSliderDrawer();
@@ -78,7 +80,7 @@ public class MainActivity extends ActionBarActivity  {
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
+        //int id = item.getItemId();
 
         if (mDrawerToggle.onOptionsItemSelected(item)) {
             return true;
@@ -105,7 +107,7 @@ public class MainActivity extends ActionBarActivity  {
 
     /** Swaps fragments in the main content view */
     private void selectItem(int position) {
-        Fragment fragment = null;
+        Fragment fragment;
         Class act = null;
         selectedDrawer = position;
         // Create a new fragment or activity based on what we selected
@@ -125,8 +127,6 @@ public class MainActivity extends ActionBarActivity  {
             default:
                 fragment = new DiningListFragment();
         }
-        if( fragment != null){
-
             Bundle args = new Bundle();
             fragment.setArguments(args);
 
@@ -134,10 +134,6 @@ public class MainActivity extends ActionBarActivity  {
             getSupportFragmentManager().beginTransaction()
                     .replace(R.id.container, fragment)
                     .commit();
-
-        } else if (act != null){
-            this.startActivity(new Intent(this, act));
-        }
 
 
         // Highlight the selected item, update the title, and close the drawer

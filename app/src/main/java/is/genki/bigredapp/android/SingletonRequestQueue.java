@@ -85,7 +85,7 @@ public class SingletonRequestQueue {
             @Override
             public void onErrorResponse(VolleyError error) {
                 error.printStackTrace();
-                Toast.makeText(context, "Internet timed out :(", Toast.LENGTH_LONG).show();
+                Toast.makeText(context, "Internet timed out", Toast.LENGTH_SHORT).show();
             }
         };
     }
