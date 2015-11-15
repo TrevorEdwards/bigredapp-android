@@ -13,9 +13,9 @@
     <string name="about_title">Big Red App for Android</string>
     <string name="about_description">This app is still in beta stage, and all bug reports, contributions, etc. are appreciated!</string>
     <string name="about_check_us_out">Please check us out on:</string>
-    <string name="about_github_link"><a href="http://github.com/genkimarshall/bigredapp-android">GitHub</a></string>
+    <string name="about_github_link"><a href="https://github.com/TrevorEdwards/bigredapp-android">GitHub</a></string>
     <string name="about_or_email">Or, send an email to:</string>
-    <string name="about_support_email">gsm75@cornell.edu</string>
+    <string name="about_support_email">tre23@cornell.edu</string>
     <string name="about_open_source_is_great">This app will always be free and open source.</string>
     <string name="title_activity_map_search">MapSearchActivity</string>
     <string name="title_activity_filter_chooser">FilterChooserActivity</string>
