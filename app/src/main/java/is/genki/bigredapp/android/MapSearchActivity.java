@@ -52,7 +52,7 @@ public class MapSearchActivity extends ListActivity {
 
         //No results, return to map
         if(results.size() == 0){
-            Toast.makeText(this, "No Results", Toast.LENGTH_LONG).show();
+            Toast.makeText(this, "No Results", Toast.LENGTH_SHORT).show();
             this.finish();
             return;
         }

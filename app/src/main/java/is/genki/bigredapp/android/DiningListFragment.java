@@ -273,6 +273,8 @@ public class DiningListFragment extends SwipeRefreshListFragment {
                     mPreferences.edit().putLong(DINING_LIST_DATE_KEY, System.currentTimeMillis()).apply();
                     try {
                         mDiningList = response.getJSONArray("halls");
+                        JSONArray cafes = response.getJSONArray("cafes");
+                        mDiningList = concatArray(mDiningList,cafes);
                         mPreferences.edit().putString(DINING_LIST_KEY, mDiningList.toString()).apply();
                     } catch (org.json.JSONException e){
                         //Do nothing
@@ -502,5 +504,24 @@ public class DiningListFragment extends SwipeRefreshListFragment {
             }
         }
         return status;
+    }
+
+    /**
+     * Concatenates two JSONArrays (for combining cafe/hall arrays)
+     * @param arr1 The first array to be concatenated
+     * @param arr2 The second array to be concatenated
+     * @return The concatenated JSONArray
+     * @throws JSONException
+     */
+    private JSONArray concatArray(JSONArray arr1, JSONArray arr2)
+            throws JSONException {
+        JSONArray result = new JSONArray();
+        for (int i = 0; i < arr1.length(); i++) {
+            result.put(arr1.get(i));
+        }
+        for (int i = 0; i < arr2.length(); i++) {
+            result.put(arr2.get(i));
+        }
+        return result;
     }
 }
