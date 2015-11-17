@@ -17,6 +17,7 @@ import android.widget.TextView;
 
 import com.android.volley.Request;
 import com.android.volley.Response;
+import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.example.android.swiperefreshlistfragment.SwipeRefreshListFragment;
 
@@ -49,7 +50,7 @@ public class DiningListFragment extends SwipeRefreshListFragment {
     private static final int MS_IN_HOUR = 3600000;
     private static final long MS_IN_2_WEEKS = 1209600000;
 
-    public static final String BASE_URL = "http://tangerine-tious.rhcloud.com/dining";
+    public static final String BASE_URL = "http://redapi-tious.rhcloud.com/dining";
     private static final String DINING_LIST_KEY = "DINING_LIST_KEY";
     private static final String DINING_LIST_DATE_KEY = "DINING_LIST_DATE_KEY";
     private static final String LAST_REFRESHED_KEY = "LAST_REFRESHED_KEY";
@@ -267,28 +268,26 @@ public class DiningListFragment extends SwipeRefreshListFragment {
      */
     private void getDiningList() {
         if (SingletonRequestQueue.isConnected(mContext)) {
-            JsonObjectRequest jsonObjectRequest = (JsonObjectRequest)
+            JsonObjectRequest jsonArrayRequest = (JsonObjectRequest)
                     new JsonObjectRequest(Request.Method.GET, BASE_URL,
                     new Response.Listener<JSONObject>() {
                 @Override
                 public void onResponse(JSONObject response) {
                     // cache the result
-                    mPreferences.edit().putString(DINING_LIST_KEY, response.toString()).apply();
                     mPreferences.edit().putLong(DINING_LIST_DATE_KEY, System.currentTimeMillis()).apply();
                     try {
                         mDiningList = response.getJSONArray("halls");
                         JSONArray cafes = response.getJSONArray("cafes");
-                        for (int i = 0; i < cafes.length(); i++) {
-                            mDiningList.put(cafes.get(i));
-                        }
-                        getDiningCalendarEvents();
-                    } catch (JSONException e) {
-                        e.printStackTrace();
+                        mDiningList = concatArray(mDiningList,cafes);
+                        mPreferences.edit().putString(DINING_LIST_KEY, mDiningList.toString()).apply();
+                    } catch (org.json.JSONException e){
+                        //Do nothing
                     }
+                    getDiningCalendarEvents();
                 }
             }, SingletonRequestQueue.getErrorListener(mContext))
                             .setRetryPolicy(SingletonRequestQueue.getRetryPolicy());
-            SingletonRequestQueue.getInstance(mContext).addToRequestQueue(jsonObjectRequest);
+            SingletonRequestQueue.getInstance(mContext).addToRequestQueue(jsonArrayRequest);
         }
     }
 
@@ -509,5 +508,24 @@ public class DiningListFragment extends SwipeRefreshListFragment {
             }
         }
         return status;
+    }
+
+    /**
+     * Concatenates two JSONArrays (for combining cafe/hall arrays)
+     * @param arr1 The first array to be concatenated
+     * @param arr2 The second array to be concatenated
+     * @return The concatenated JSONArray
+     * @throws JSONException
+     */
+    private JSONArray concatArray(JSONArray arr1, JSONArray arr2)
+            throws JSONException {
+        JSONArray result = new JSONArray();
+        for (int i = 0; i < arr1.length(); i++) {
+            result.put(arr1.get(i));
+        }
+        for (int i = 0; i < arr2.length(); i++) {
+            result.put(arr2.get(i));
+        }
+        return result;
     }
 }

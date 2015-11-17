@@ -4,6 +4,8 @@
         <!-- Customize your theme here. -->
         <item name="colorPrimary">@color/primary</item>
         <item name="colorPrimaryDark">@color/primaryDark</item>
+        <item name="colorAccent">@color/accent</item>
+        <item name="android:activatedBackgroundIndicator">@drawable/drawer_list_selector</item>
     </style>
 
     <style name="ToolbarBase">
@@ -13,15 +15,19 @@
         <item name="popupTheme">@style/ThemeOverlay.AppCompat.Light</item>
         <item name="android:minHeight">?attr/actionBarSize</item>
         <item name="android:background">?attr/colorPrimary</item>
+
     </style>
 
     <style name="ToolbarTheme" parent="ToolbarBase">
-        <!-- Actual theme to apply to Toolbar -->
     </style>
+
 
     <color name="primary">#ef4035</color>
     <color name="primaryDark">#b31b1b</color>
+    <color name="accent">#FFFFFF</color>
     <color name="openGreen">#388E3C</color>
     <color name="almostOpenGreen">#81C784</color>
     <color name="closedColor">#757575</color>
+    <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
+    <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
 </resources>

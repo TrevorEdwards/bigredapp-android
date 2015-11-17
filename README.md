@@ -3,18 +3,19 @@
 ## Download?
 * Download it from the Play Store [here](https://play.google.com/store/apps/details?id=is.genki.bigredapp.android)!
 
-## iOS?
-* The iOS version has begun work by Matthew Gharrity [here](https://github.com/gharrma/bigredapp-ios). Thanks Matthew!
-
 ## What
-* It's still a pain to find Cornell University dining hall info on the phone...
+* It's still a pain to navigate Cornell's campus and find dining hall info on the phone...
 * So, this is a native Android app to help people do that :)
 * We are using [Kevin Chavez](https://github.com/mrkev)'s API [here](http://redapi-tious.rhcloud.com/).
+* We also use the Cornell Open Data Initiative API [here](https://cornelldata.org/).
 
 ## Objectives
 * 100% free as in beer (no monetization) and free as in speech (open source).
 * App: native Android, easy to use, good looking, minimal, clean.
 * Code: well-commented, easy to maintain.
+
+## iOS?
+* The iOS version has begun work by Matthew Gharrity [here](https://github.com/gharrma/bigredapp-ios). Thanks Matthew!
 
 ## Current TODO
 * See the [issues page](https://github.com/genkimarshall/bigredapp-android/issues).
@@ -45,3 +46,4 @@
 * freenode IRC: #opensourcecornell
 * [Facebook Group](https://www.facebook.com/groups/opensourcecornell)
 * [Slack chat](https://opensourcecornell.slack.com/signup)
+
