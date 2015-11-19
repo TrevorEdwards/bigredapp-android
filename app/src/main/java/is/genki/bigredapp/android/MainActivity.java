@@ -46,10 +46,14 @@ public class MainActivity extends ActionBarActivity  {
                     .add(R.id.container, new DiningListFragment())
                     .commit();
         } else {
-            System.out.println(savedInstanceState);
             Object selString = savedInstanceState.get(SELECTED_STRING);
-            if(selString != null && selString instanceof Integer)
-             selectItem( (Integer) selString);
+            if(selString != null && selString instanceof Integer) {
+                selectItem((Integer) selString);
+            } else{
+                getSupportFragmentManager().beginTransaction()
+                        .add(R.id.container, new DiningListFragment())
+                        .commit();
+            }
         }
 
         setupSliderDrawer();
