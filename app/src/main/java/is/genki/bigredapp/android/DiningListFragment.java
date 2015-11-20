@@ -54,7 +54,7 @@ public class DiningListFragment extends SwipeRefreshListFragment {
     private static final String DINING_LIST_KEY = "DINING_LIST_KEY";
     private static final String DINING_LIST_DATE_KEY = "DINING_LIST_DATE_KEY";
     private static final String LAST_REFRESHED_KEY = "LAST_REFRESHED_KEY";
-    private static final int NUM_DAYS_OF_EVENTS_TO_GET = 6;
+    private static final int NUM_DAYS_OF_EVENTS_TO_GET = 2;
     
     private static Context mContext;
     private JSONArray mDiningList;
@@ -232,9 +232,10 @@ public class DiningListFragment extends SwipeRefreshListFragment {
         try {
             final StringBuilder builder = new StringBuilder();
             int len = mDiningList.length();
-            for (int i = 0; i < len; i++) {
+            for (int i = 0; i < len-1; i++) {
                 builder.append(mDiningList.get(i)).append(',');
             }
+            builder.append(mDiningList.get(len-1));
             final String commaSeparatedDiningHalls = builder.toString();
 
             // create the date range of CalEvents to get for each location

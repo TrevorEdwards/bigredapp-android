@@ -38,25 +38,25 @@ public class MainActivity extends ActionBarActivity  {
         setContentView(R.layout.activity_main);
 
         // See the "SingletonRequestQueue" class. Initializes the RequestQueue
-        //noinspection UnusedAssignment
-        RequestQueue queue = SingletonRequestQueue.getInstance(this).getRequestQueue();
+        SingletonRequestQueue.getInstance(this).getRequestQueue();
+
+        setupSliderDrawer();
 
         if (savedInstanceState == null) {
             getSupportFragmentManager().beginTransaction()
                     .add(R.id.container, new DiningListFragment())
                     .commit();
         } else {
-            Object selString = savedInstanceState.get(SELECTED_STRING);
-            if(selString != null && selString instanceof Integer) {
-                selectItem((Integer) selString);
+            selectedDrawer = savedInstanceState.getInt(SELECTED_STRING,-1);
+            if(selectedDrawer != -1) {
+                selectItem(selectedDrawer); //Just set view to dining halls
             } else{
                 getSupportFragmentManager().beginTransaction()
                         .add(R.id.container, new DiningListFragment())
                         .commit();
+                selectItem(0); //Just set view to dining halls
             }
         }
-
-        setupSliderDrawer();
 
     }
 
@@ -66,7 +66,10 @@ public class MainActivity extends ActionBarActivity  {
         // Inflate the menu; this adds items to the action bar if it is present.
         mOptionsMenu = menu;
         getMenuInflater().inflate(R.menu.menu_main, mOptionsMenu);
-        setMapEnabled(false);
+        if(selectedDrawer != 1)
+            setMapEnabled(false);
+        else
+            setMapEnabled(true);
 
         // Associate searchable configuration with the SearchView
         SearchManager searchManager =
@@ -148,14 +151,19 @@ public class MainActivity extends ActionBarActivity  {
 
     private void hideOption(int id)
     {
-        MenuItem item = mOptionsMenu.findItem(id);
-        item.setVisible(false);
+        if(mOptionsMenu != null) {
+            MenuItem item = mOptionsMenu.findItem(id);
+            item.setVisible(false);
+        }
     }
 
     private void showOption(int id)
     {
-        MenuItem item = mOptionsMenu.findItem(id);
-        item.setVisible(true);
+        if(mOptionsMenu != null) {
+            MenuItem item = mOptionsMenu.findItem(id);
+            item.setVisible(true);
+        } else
+            System.out.println("sad");
     }
 
     /**
@@ -209,11 +217,11 @@ public class MainActivity extends ActionBarActivity  {
 
     @Override
     public void onSaveInstanceState(Bundle savedInstanceState) {
-        // Save the user's current game state
-        savedInstanceState.putInt(SELECTED_STRING, selectedDrawer);
-
         // Always call the superclass so it can save the view hierarchy state
         super.onSaveInstanceState(savedInstanceState);
+
+        // Save the current selected drawer
+        savedInstanceState.putInt(SELECTED_STRING, selectedDrawer);
     }
 
     /**
