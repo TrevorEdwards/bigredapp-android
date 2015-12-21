@@ -128,6 +128,10 @@ public class MainActivity extends ActionBarActivity  {
                 setMapEnabled(true);
                 break;
             case 2:
+                fragment = new EventListFragment();
+                setMapEnabled(false);
+                break;
+            case 3:
                 fragment = new AboutFragment();
                 setMapEnabled(false);
                 break;
@@ -171,7 +175,7 @@ public class MainActivity extends ActionBarActivity  {
      */
     private void setupSliderDrawer(){
 
-        mAppActivities = new String[] {"Dining","Map","About"};
+        mAppActivities = new String[] {"Dining","Map", "Events","About"};
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         mDrawerList = (ListView) findViewById(R.id.left_drawer);
 

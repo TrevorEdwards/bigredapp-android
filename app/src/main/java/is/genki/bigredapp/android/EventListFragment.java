@@ -81,10 +81,16 @@ public class EventListFragment extends ListFragment {
      * Converts event xml into a usable state
      * @return
      */
-    private ArrayList<EventObj> convertEvents(String xml){
+    private List convertEvents(String xml){
         //See http://developer.android.com/training/basics/network-ops/xml.html
-
-        return null;
+        EventXMLParser exmlp = new EventXMLParser();
+        try{
+            return exmlp.parse(xml);
+        }
+        catch( Exception e){
+            e.printStackTrace();
+            return null;
+        }
     }
 
     class EventObj {
@@ -99,6 +105,10 @@ public class EventListFragment extends ListFragment {
             description = ds;
             link = lk;
             date = dat;
+        }
+
+        public String toString(){
+            return title;
         }
     }
 
@@ -121,14 +131,18 @@ public class EventListFragment extends ListFragment {
         private List readFeed(XmlPullParser parser) throws XmlPullParserException, IOException {
             List entries = new ArrayList();
 
-            parser.require(XmlPullParser.START_TAG, null, "feed");
+            parser.require(XmlPullParser.START_TAG, null, "rss"); //TODO Convert to align with XML schema
+            parser.next();
+            parser.require(XmlPullParser.START_TAG, null, "channel");
             while (parser.next() != XmlPullParser.END_TAG) {
                 if (parser.getEventType() != XmlPullParser.START_TAG) {
                     continue;
                 }
                 String name = parser.getName();
                 // Starts by looking for the entry tag
-                if (name.equals("entry")) {
+                System.out.println(name);
+                if (name.equals("item")) {
+                    System.out.println("meow");
                     entries.add(readEventObj(parser));
                 } else {
                     skip(parser);
@@ -138,7 +152,7 @@ public class EventListFragment extends ListFragment {
         }
 
         private EventObj readEventObj(XmlPullParser parser) throws XmlPullParserException, IOException {
-            parser.require(XmlPullParser.START_TAG, null, "entry");
+            parser.require(XmlPullParser.START_TAG, null, "item");
             String title = null;
             String description = null;
             String link = null;
