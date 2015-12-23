@@ -1,7 +1,9 @@
 package is.genki.bigredapp.android;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.app.ListFragment;
 import android.support.v4.view.ViewPager;
 import android.util.Xml;
@@ -54,7 +56,19 @@ public class EventListFragment extends ListFragment {
 
     @Override
     public void onListItemClick(ListView l, View v, int position, long id) {
-        // Do something when a list item is clicked
+        super.onListItemClick(l, v, position, id); //TODO Refactor to a custom view object that can be passed
+        EventObj ref = (EventObj) v.getTag();
+        Intent intent = new Intent(mContext, EventActivity.class);
+        intent.putExtra(EventActivity.KEY_TITLE, ref.title);
+        intent.putExtra(EventActivity.KEY_LINK, ref.link);
+        intent.putExtra(EventActivity.KEY_MEDIA, ref.media);
+        intent.putExtra(EventActivity.KEY_DESCRIPTION, ref.description);
+        intent.putExtra(EventActivity.KEY_DATE, ref.date);
+
+        // ViewCompat.setTransitionName(view, "shared_transition");
+        ActivityOptionsCompat options = ActivityOptionsCompat.makeScaleUpAnimation(
+                v, 0, 0, v.getWidth(), v.getHeight());
+        mContext.startActivity(intent, options.toBundle());
     }
 
     /**
@@ -99,12 +113,14 @@ public class EventListFragment extends ListFragment {
         String description;
         String link;
         String date;
+        String media;
 
-        public EventObj(String dt, String ds, String lk, String dat){
+        public EventObj(String dt, String ds, String lk, String dat, String med){
             title = dt;
             description = ds;
             link = lk;
             date = dat;
+            media = med;
         }
 
         public String toString(){
@@ -140,9 +156,7 @@ public class EventListFragment extends ListFragment {
                 }
                 String name = parser.getName();
                 // Starts by looking for the entry tag
-                System.out.println(name);
                 if (name.equals("item")) {
-                    System.out.println("meow");
                     entries.add(readEventObj(parser));
                 } else {
                     skip(parser);
@@ -157,6 +171,7 @@ public class EventListFragment extends ListFragment {
             String description = null;
             String link = null;
             String date = null;
+            String media = null;
 
             while (parser.next() != XmlPullParser.END_TAG) {
                 if (parser.getEventType() != XmlPullParser.START_TAG) {
@@ -169,13 +184,16 @@ public class EventListFragment extends ListFragment {
                   //  description = readGeneric(parser,"description"); //TODO: Description schema more advanced than this
                 } else if (name.equals("link")) {
                     link = readGeneric(parser,"link");
-                }else if (name.equals("date")) {
-                  //  date = readGeneric(parser, "date"); //TODO not correct
-                } else {
+                }else if (name.equals("dc:date")) {
+                    date = readGeneric(parser, "dc:date"); //TODO not correct
+                }
+                else if (name.equals("media:content")) {
+                    media = readGeneric(parser, "media:content"); //TODO not correct
+                }else {
                     skip(parser);
                 }
             }
-            return new EventObj(title, description, link, date);
+            return new EventObj(title, description, link, date, media);
         }
 
         private String readGeneric(XmlPullParser parser,String pull) throws IOException, XmlPullParserException {
