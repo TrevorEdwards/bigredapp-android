@@ -4,18 +4,22 @@
     tools:context="is.genki.bigredapp.android.EventActivity"
     tools:ignore="MergeRootFrame">
     <android.support.v7.widget.Toolbar
-        android:id="@+id/dining_location_toolbar"
+        android:id="@+id/event_activity_toolbar"
         android:layout_height="wrap_content"
         android:layout_width="match_parent"
         android:layout_alignParentTop="true"
         style="@style/ToolbarTheme"
         />
-    <FrameLayout
-        android:id="@+id/container"
+
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="fill_parent"
-        android:layout_below="@id/dining_location_toolbar"
-        >
+        android:layout_height="match_parent"
+        android:id="@+id/scrollView"
+        android:layout_below="@+id/event_activity_toolbar">
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
 
         <ImageView
             android:layout_width="wrap_content"
@@ -24,17 +28,32 @@
             android:layout_gravity="center_horizontal|top" />
 
         <TextView
-            android:layout_width="100dp"
-            android:layout_height="35dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:text="Title"
+            android:id="@+id/title"
+            android:layout_gravity="center_horizontal|top"
+            android:textAlignment="center" />
+
+        <TextView
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
             android:text="Description"
             android:id="@+id/description"
-            android:layout_gravity="center" />
+            android:layout_gravity="center"
+            android:autoLink="web"
+            android:textAlignment="center" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Link"
             android:id="@+id/link"
-            android:layout_gravity="center_horizontal|bottom" />
-    </FrameLayout>
+            android:layout_gravity="center_horizontal|bottom"
+            android:autoLink="web"
+            android:textAlignment="center" />
+
+    </LinearLayout>
+    </ScrollView>
 </RelativeLayout>

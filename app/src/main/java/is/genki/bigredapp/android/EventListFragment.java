@@ -57,7 +57,7 @@ public class EventListFragment extends ListFragment {
     @Override
     public void onListItemClick(ListView l, View v, int position, long id) {
         super.onListItemClick(l, v, position, id); //TODO Refactor to a custom view object that can be passed
-        EventObj ref = (EventObj) v.getTag();
+        EventObj ref = (EventObj) l.getAdapter().getItem(position);
         Intent intent = new Intent(mContext, EventActivity.class);
         intent.putExtra(EventActivity.KEY_TITLE, ref.title);
         intent.putExtra(EventActivity.KEY_LINK, ref.link);
@@ -124,7 +124,7 @@ public class EventListFragment extends ListFragment {
         }
 
         public String toString(){
-            return title;
+            return title.substring(0,Math.min(title.length(),80)); //Limit description lengths
         }
     }
 
@@ -180,15 +180,15 @@ public class EventListFragment extends ListFragment {
                 String name = parser.getName();
                 if (name.equals("title")) {
                     title = readGeneric(parser,"title");
-                } else if (name.equals("summary")) {
-                  //  description = readGeneric(parser,"description"); //TODO: Description schema more advanced than this
+                } else if (name.equals("description")) {
+                    description = readGeneric(parser,"description");
                 } else if (name.equals("link")) {
                     link = readGeneric(parser,"link");
                 }else if (name.equals("dc:date")) {
                     date = readGeneric(parser, "dc:date"); //TODO not correct
                 }
                 else if (name.equals("media:content")) {
-                    media = readGeneric(parser, "media:content"); //TODO not correct
+                    media = readMedia(parser);
                 }else {
                     skip(parser);
                 }
@@ -209,6 +209,15 @@ public class EventListFragment extends ListFragment {
                 result = parser.getText();
                 parser.nextTag();
             }
+            return result;
+        }
+
+        private String readMedia(XmlPullParser parser) throws IOException, XmlPullParserException {
+            parser.require(XmlPullParser.START_TAG, null, "media:content");
+            String result = "";
+            result = parser.getAttributeValue(1);
+            parser.next();
+            parser.require(XmlPullParser.END_TAG, null, "media:content");
             return result;
         }
 
