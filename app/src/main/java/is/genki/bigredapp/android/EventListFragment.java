@@ -5,22 +5,15 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.app.ListFragment;
-import android.support.v4.view.ViewPager;
 import android.util.Xml;
-import android.view.Gravity;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
-import android.widget.ProgressBar;
 
 import com.android.volley.Request;
 import com.android.volley.Response;
-import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.StringRequest;
 
-import org.json.JSONException;
-import org.json.JSONObject;
 import org.xmlpull.v1.XmlPullParser;
 import org.xmlpull.v1.XmlPullParserException;
 
@@ -73,7 +66,6 @@ public class EventListFragment extends ListFragment {
 
     /**
      * Requests Cornell's event data
-     * @return
      */
     private void populateEvents(){
         //Fetch data from the website
@@ -83,8 +75,11 @@ public class EventListFragment extends ListFragment {
                         new Response.Listener<String>() {
                             @Override
                             public void onResponse(String response) {
-                                ArrayAdapter<EventObj> mAdapter = new ArrayAdapter<EventObj>(mContext, android.R.layout.simple_list_item_1, convertEvents(response));
-                                setListAdapter(mAdapter);
+                                List cEvents = convertEvents(response);
+                                if( cEvents != null){
+                                    ArrayAdapter<EventObj> mAdapter = new ArrayAdapter<EventObj>(mContext, android.R.layout.simple_list_item_1, cEvents);
+                                    setListAdapter(mAdapter);
+                                }
                             }
                         }, SingletonRequestQueue.getErrorListener(mContext))
                         .setRetryPolicy(SingletonRequestQueue.getRetryPolicy());
@@ -93,7 +88,6 @@ public class EventListFragment extends ListFragment {
 
     /**
      * Converts event xml into a usable state
-     * @return
      */
     private List convertEvents(String xml){
         //See http://developer.android.com/training/basics/network-ops/xml.html
@@ -145,11 +139,12 @@ public class EventListFragment extends ListFragment {
         }
 
         private List readFeed(XmlPullParser parser) throws XmlPullParserException, IOException {
-            List entries = new ArrayList();
+            List<EventObj> entries = new ArrayList<>();
 
             parser.require(XmlPullParser.START_TAG, null, "rss"); //TODO Convert to align with XML schema
             parser.next();
             parser.require(XmlPullParser.START_TAG, null, "channel");
+
             while (parser.next() != XmlPullParser.END_TAG) {
                 if (parser.getEventType() != XmlPullParser.START_TAG) {
                     continue;
@@ -178,19 +173,19 @@ public class EventListFragment extends ListFragment {
                     continue;
                 }
                 String name = parser.getName();
-                if (name.equals("title")) {
-                    title = readGeneric(parser,"title");
-                } else if (name.equals("description")) {
-                    description = readGeneric(parser,"description");
-                } else if (name.equals("link")) {
-                    link = readGeneric(parser,"link");
-                }else if (name.equals("dc:date")) {
-                    date = readGeneric(parser, "dc:date"); //TODO not correct
-                }
-                else if (name.equals("media:content")) {
-                    media = readMedia(parser);
-                }else {
-                    skip(parser);
+                switch(name){
+                    case "title":  title = readGeneric(parser,"title");
+                        break;
+                    case "description": description = readGeneric(parser,"description");
+                        break;
+                    case "link":  link = readGeneric(parser,"link");
+                        break;
+                    case "dc:date":  date = readGeneric(parser, "dc:date");
+                        break;
+                    case "media:content": media = readMedia(parser);
+                        break;
+                    default: skip(parser);
+                        break;
                 }
             }
             return new EventObj(title, description, link, date, media);
@@ -214,8 +209,7 @@ public class EventListFragment extends ListFragment {
 
         private String readMedia(XmlPullParser parser) throws IOException, XmlPullParserException {
             parser.require(XmlPullParser.START_TAG, null, "media:content");
-            String result = "";
-            result = parser.getAttributeValue(1);
+            String result = parser.getAttributeValue(1);
             parser.next();
             parser.require(XmlPullParser.END_TAG, null, "media:content");
             return result;
