@@ -37,6 +37,15 @@
             android:textAlignment="center" />
 
         <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:text="Time"
+            android:id="@+id/time"
+            android:layout_gravity="center_horizontal"
+            android:textAlignment="center" />
+
+        <TextView
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:text="Description"

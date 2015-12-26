@@ -9,11 +9,15 @@ import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.Html;
+import android.text.format.DateUtils;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import java.io.InputStream;
 import java.net.URL;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 /**
  * Shows information for a specific event
@@ -44,6 +48,26 @@ public class EventActivity extends ActionBarActivity {
             ((TextView) findViewById(R.id.title)).setText(title.substring(title.indexOf(":")+1,title.length()));
             String description = Html.fromHtml(extras.getString(KEY_DESCRIPTION)).toString();
             description = description.substring(0,description.indexOf("View on site |"));
+
+            //Sample date:  2015-12-25T00:00:00-05:00
+            //TODO Verify this code
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-ddHH:mm:ssZ");
+            long timeInMilliseconds = 0;
+            try {
+                Date mDate = sdf.parse(extras.getString(KEY_DATE).replace("T",""));
+                timeInMilliseconds = mDate.getTime();
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+            String readableDate =
+                    DateUtils.getRelativeTimeSpanString(
+                            timeInMilliseconds,
+                            System.currentTimeMillis(),
+                            DateUtils.DAY_IN_MILLIS, DateUtils.FORMAT_SHOW_TIME )
+                            .toString(); //TODO: Show a time range (start to finish) and date
+
+            ((TextView) findViewById(R.id.time)).setText(readableDate);
+
             ((TextView) findViewById(R.id.description)).setText(description);
             ((TextView) findViewById(R.id.link)).setText(extras.getString(KEY_LINK));
 
