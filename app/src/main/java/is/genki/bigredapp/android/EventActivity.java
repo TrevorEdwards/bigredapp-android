@@ -43,28 +43,31 @@ public class EventActivity extends ActionBarActivity {
         Bundle extras = getIntent().getExtras();
         if (extras != null) {
             String title = extras.getString(KEY_TITLE);
-
-            setTitle(title.substring(0,title.indexOf(":")));
-            ((TextView) findViewById(R.id.title)).setText(title.substring(title.indexOf(":")+1,title.length()));
+            if(title != null) {
+                setTitle(title.substring(0, title.indexOf(":")));
+                ((TextView) findViewById(R.id.title)).setText(title.substring(title.indexOf(":") + 1, title.length()));
+            }
             String description = Html.fromHtml(extras.getString(KEY_DESCRIPTION)).toString();
             description = description.substring(0,description.indexOf("View on site |"));
 
             //Sample date:  2015-12-25T00:00:00-05:00
-            //TODO Verify this code
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-ddHH:mm:ssZ");
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ssZ");
             long timeInMilliseconds = 0;
             try {
-                Date mDate = sdf.parse(extras.getString(KEY_DATE).replace("T",""));
-                timeInMilliseconds = mDate.getTime();
+                String date = extras.getString(KEY_DATE);
+                if(date != null) {
+                    Date mDate = sdf.parse(date.replace("T", " "));
+                    timeInMilliseconds = mDate.getTime();
+                }
             } catch (ParseException e) {
                 e.printStackTrace();
             }
-            String readableDate =
-                    DateUtils.getRelativeTimeSpanString(
+           String readableDate =
+                   DateUtils.getRelativeTimeSpanString(
                             timeInMilliseconds,
                             System.currentTimeMillis(),
-                            DateUtils.DAY_IN_MILLIS, DateUtils.FORMAT_SHOW_TIME )
-                            .toString(); //TODO: Show a time range (start to finish) and date
+                            DateUtils.MINUTE_IN_MILLIS)
+                           .toString();
 
             ((TextView) findViewById(R.id.time)).setText(readableDate);
 
