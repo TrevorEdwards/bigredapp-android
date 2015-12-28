@@ -42,7 +42,7 @@
             android:textAppearance="?android:attr/textAppearanceMedium"
             android:text="Time"
             android:id="@+id/time"
-            android:layout_gravity="center_horizontal|bottom|left"
+            android:layout_gravity="center_horizontal|bottom"
             android:textAlignment="center" />
 
         <TextView

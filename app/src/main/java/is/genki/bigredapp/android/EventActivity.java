@@ -1,15 +1,20 @@
 package is.genki.bigredapp.android;
 
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Point;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.Html;
 import android.text.format.DateUtils;
+import android.view.View;
+import android.view.ViewManager;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -43,14 +48,38 @@ public class EventActivity extends ActionBarActivity {
 
         Bundle extras = getIntent().getExtras();
         if (extras != null) {
+
+            //Find and parse title
             String title = extras.getString(KEY_TITLE);
             if(title != null) {
                 setTitle(title.substring(0, title.indexOf(":")));
                 ((TextView) findViewById(R.id.title)).setText(title.substring(title.indexOf(":") + 1, title.length()));
             }
+
+            //Find and sanitize description
             String description = Html.fromHtml(extras.getString(KEY_DESCRIPTION)).toString();
             description = description.substring(0,description.indexOf("View on site |"));
 
+            //Setup map link button if coordinates exist
+            final String lat = extras.getString(KEY_LATITUDE);
+            final String lon = extras.getString(KEY_LONGITUDE);
+            Button b = (Button) findViewById(R.id.map);
+
+            if(lat != null){
+                b.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        // Geo URL format: geo:latitude,longitude
+                        Intent i = new Intent(Intent.ACTION_VIEW, Uri.parse("geo:"+lat+","+lon));
+                        startActivity(i);
+                    }
+                });
+            } else{
+                //We have no geo data so no need to have the button
+                ((ViewManager)b.getParent()).removeView(b);
+            }
+
+            //Date formatting
             //Sample date:  2015-12-25T00:00:00-05:00
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ssZ");
             long timeInMilliseconds = 0;

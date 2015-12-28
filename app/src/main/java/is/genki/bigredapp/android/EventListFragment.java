@@ -57,6 +57,8 @@ public class EventListFragment extends ListFragment {
         intent.putExtra(EventActivity.KEY_MEDIA, ref.media);
         intent.putExtra(EventActivity.KEY_DESCRIPTION, ref.description);
         intent.putExtra(EventActivity.KEY_DATE, ref.date);
+        intent.putExtra(EventActivity.KEY_LATITUDE, ref.lat);
+        intent.putExtra(EventActivity.KEY_LONGITUDE, ref.lon);
 
         // ViewCompat.setTransitionName(view, "shared_transition");
         ActivityOptionsCompat options = ActivityOptionsCompat.makeScaleUpAnimation(
