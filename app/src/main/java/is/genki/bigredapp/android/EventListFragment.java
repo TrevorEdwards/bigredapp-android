@@ -108,13 +108,17 @@ public class EventListFragment extends ListFragment {
         String link;
         String date;
         String media;
+        String lat;
+        String lon;
 
-        public EventObj(String dt, String ds, String lk, String dat, String med){
+        public EventObj(String dt, String ds, String lk, String dat, String med, String lat, String lon){
             title = dt;
             description = ds;
             link = lk;
             date = dat;
             media = med;
+            this.lat = lat;
+            this.lon = lon;
         }
 
         public String toString(){
@@ -167,6 +171,8 @@ public class EventListFragment extends ListFragment {
             String link = null;
             String date = null;
             String media = null;
+            String lat = null;
+            String lon = null;
 
             while (parser.next() != XmlPullParser.END_TAG) {
                 if (parser.getEventType() != XmlPullParser.START_TAG) {
@@ -182,13 +188,17 @@ public class EventListFragment extends ListFragment {
                         break;
                     case "dc:date":  date = readGeneric(parser, "dc:date");
                         break;
+                    case "geo:lat":  lat = readGeneric(parser, "geo:lat");
+                        break;
+                    case "geo:long":  lon = readGeneric(parser, "geo:long");
+                        break;
                     case "media:content": media = readMedia(parser);
                         break;
                     default: skip(parser);
                         break;
                 }
             }
-            return new EventObj(title, description, link, date, media);
+            return new EventObj(title, description, link, date, media, lat, lon);
         }
 
         private String readGeneric(XmlPullParser parser,String pull) throws IOException, XmlPullParserException {

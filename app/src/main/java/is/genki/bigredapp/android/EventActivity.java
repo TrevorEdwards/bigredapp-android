@@ -30,7 +30,8 @@ public class EventActivity extends ActionBarActivity {
     public static final String KEY_MEDIA = "EventActivity.MEDIA";
     public static final String KEY_DESCRIPTION = "EventActivity.DESCRIPTION";
     public static final String KEY_DATE = "EventActivity.DATE";
-
+    public static final String KEY_LATITUDE = "EventActivity.LATITUDE";
+    public static final String KEY_LONGITUDE = "EventActivity.LONGITUDE";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -90,7 +91,7 @@ public class EventActivity extends ActionBarActivity {
         protected Drawable doInBackground(String... url) {
             try {
                 InputStream is = (InputStream) new URL(url[0]).getContent();
-                Drawable d = Drawable.createFromStream(is, "src name");
+                Drawable d = Drawable.createFromStream(is, "");
 
                 //Get size for resizing image
                 Point size = new Point();
