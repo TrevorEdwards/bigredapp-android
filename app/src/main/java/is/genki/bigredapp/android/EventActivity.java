@@ -70,7 +70,7 @@ public class EventActivity extends ActionBarActivity {
                     @Override
                     public void onClick(View view) {
                         // Geo URL format: geo:latitude,longitude
-                        Intent i = new Intent(Intent.ACTION_VIEW, Uri.parse("geo:"+lat+","+lon));
+                        Intent i = new Intent(Intent.ACTION_VIEW, Uri.parse("geo:"+lat+","+lon+"?z=16"));
                         startActivity(i);
                     }
                 });
