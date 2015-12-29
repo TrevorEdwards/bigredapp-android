@@ -5,7 +5,10 @@
     android:layout_height="wrap_content"
     android:textAppearance="?android:attr/textAppearanceListItemSmall"
     android:gravity="center_vertical"
-    android:paddingLeft="16dp"
-    android:paddingRight="16dp"
-    android:background="?android:attr/activatedBackgroundIndicator"
-    android:minHeight="?android:attr/listPreferredItemHeightSmall"/>
+    android:paddingLeft="@dimen/standard_padding_16"
+    android:paddingRight="@dimen/standard_padding_16"
+    android:minHeight="?android:attr/listPreferredItemHeightSmall"
+    android:text="Sample Text"
+    android:drawableLeft="@drawable/ic_placeholder"
+    android:drawablePadding="@dimen/standard_padding_16"
+    />
