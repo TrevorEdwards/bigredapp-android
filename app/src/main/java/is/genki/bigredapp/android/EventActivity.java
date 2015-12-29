@@ -51,9 +51,11 @@ public class EventActivity extends ActionBarActivity {
 
             //Find and parse title
             String title = extras.getString(KEY_TITLE);
+            String formatTitle = "";
             if(title != null) {
                 setTitle(title.substring(0, title.indexOf(":")));
-                ((TextView) findViewById(R.id.title)).setText(title.substring(title.indexOf(":") + 1, title.length()));
+                formatTitle = title.substring(title.indexOf(":") + 1, title.length()).trim();
+                ((TextView) findViewById(R.id.title)).setText(formatTitle);
             }
 
             //Find and sanitize description
@@ -65,12 +67,14 @@ public class EventActivity extends ActionBarActivity {
             final String lon = extras.getString(KEY_LONGITUDE);
             Button b = (Button) findViewById(R.id.map);
 
+            final String tempTitle = formatTitle;
+
             if(lat != null){
                 b.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
                         // Geo URL format: geo:latitude,longitude
-                        Intent i = new Intent(Intent.ACTION_VIEW, Uri.parse("geo:"+lat+","+lon+"?z=16"));
+                        Intent i = new Intent(Intent.ACTION_VIEW, Uri.parse("geo:"+lat+","+lon+"?q="+lat+","+lon+"("+tempTitle+")?z=16"));
                         startActivity(i);
                     }
                 });
@@ -78,6 +82,18 @@ public class EventActivity extends ActionBarActivity {
                 //We have no geo data so no need to have the button
                 ((ViewManager)b.getParent()).removeView(b);
             }
+
+            Button b2 = (Button) findViewById(R.id.link);
+
+            final String link = extras.getString(KEY_LINK);
+
+            b2.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        Intent i = new Intent(Intent.ACTION_VIEW, Uri.parse(link));
+                        startActivity(i);
+                    }
+                });
 
             //Date formatting
             //Sample date:  2015-12-25T00:00:00-05:00
@@ -102,7 +118,6 @@ public class EventActivity extends ActionBarActivity {
             ((TextView) findViewById(R.id.time)).setText(readableDate);
 
             ((TextView) findViewById(R.id.description)).setText(description);
-            ((TextView) findViewById(R.id.link)).setText(extras.getString(KEY_LINK));
 
             //Load and display image for the event
             new RetrieveFeedTask().execute(extras.getString(KEY_MEDIA));

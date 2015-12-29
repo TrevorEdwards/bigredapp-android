@@ -55,20 +55,23 @@
             android:textAlignment="center" />
 
         <Button
-            android:layout_width="wrap_content"
+            android:layout_width="150dp"
             android:layout_height="wrap_content"
             android:text="View on Map"
             android:id="@+id/map"
-            android:layout_gravity="center_horizontal" />
-
-        <TextView
-            android:layout_width="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:textColor="@android:color/white"
+            android:background="#ef4035"
+            />
+        <Button
+            android:layout_width="150dp"
             android:layout_height="wrap_content"
-            android:text="Link"
+            android:text="More Info"
             android:id="@+id/link"
-            android:layout_gravity="center_horizontal|bottom"
-            android:autoLink="web"
-            android:textAlignment="center" />
+            android:layout_gravity="center_horizontal"
+            android:background="#ef4035"
+            android:textColor="@android:color/white"
+             />
 
     </LinearLayout>
     </ScrollView>
