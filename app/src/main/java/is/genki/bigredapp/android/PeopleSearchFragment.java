@@ -65,10 +65,10 @@ public class PeopleSearchFragment extends Fragment {
     public View onCreateView(final LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View v = inflater.inflate(R.layout.fragment_people_search, container, false);
-        final EditText searchBar = (EditText) v.findViewById(R.id.fragment_people_search_editText);
-        ImageButton search = (ImageButton) v.findViewById(R.id.fragment_people_search_button);
-        final LinearLayout bigContainer = (LinearLayout) v.findViewById(R.id.fragment_people_search_container);
+        final View view = inflater.inflate(R.layout.fragment_people_search, container, false);
+        final EditText searchBar = (EditText) view.findViewById(R.id.fragment_people_search_editText);
+        ImageButton search = (ImageButton) view.findViewById(R.id.fragment_people_search_button);
+        final LinearLayout bigContainer = (LinearLayout) view.findViewById(R.id.fragment_people_search_container);
         search.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -99,15 +99,15 @@ public class PeopleSearchFragment extends Fragment {
                                     String college = emp.text();
                                     name = name.substring(0, name.length() - 6);
 
-                                    CardView resultCard = (CardView) inflater.inflate(R.layout.people_result_card, bigContainer);
+                                    CardView resultCard= (CardView) inflater.inflate(R.layout.people_result_card/* resource id */, bigContainer, false);
                                     ((TextView)resultCard.findViewById(R.id.people_result_card_name))
                                             .setText(name);
                                     ((TextView)resultCard.findViewById(R.id.people_result_card_college))
-                                            .setText(college);
+                                            .setText(college.replace("COLLEGE: ", ""));
                                     ((TextView)resultCard.findViewById(R.id.people_result_card_email))
-                                            .setText(mail);
+                                            .setText(mail.replace("EMAIL: ", ""));
                                     ((TextView)resultCard.findViewById(R.id.people_result_card_netid))
-                                            .setText(netid);
+                                            .setText(netid.replace("NETID: ", ""));
                                     bigContainer.addView(resultCard, 1);
                                 }
                             },
@@ -123,7 +123,7 @@ public class PeopleSearchFragment extends Fragment {
             }
         });
 
-        return v;
+        return view;
     }
 
 }

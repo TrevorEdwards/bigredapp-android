@@ -34,7 +34,6 @@
                 android:layout_height="wrap_content"
                 android:fontFamily="sans-serif-light"
                 android:textSize="20sp"
-                android:layout_gravity="bottom"
                 android:id = "@+id/people_result_card_netid"
                 android:text="Name"/>
         </LinearLayout>
