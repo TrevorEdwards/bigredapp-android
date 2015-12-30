@@ -137,6 +137,10 @@ public class MainActivity extends ActionBarActivity  {
                 setMapEnabled(false);
                 break;
             case 3:
+                fragment = new PeopleSearchFragment();
+                setMapEnabled(false);
+                break;
+            case 4:
                 fragment = new AboutFragment();
                 setMapEnabled(false);
                 break;
@@ -186,7 +190,7 @@ public class MainActivity extends ActionBarActivity  {
      */
     private void setupSliderDrawer(){
 
-        mAppActivities = new String[] {"Dining","Map", "Events","About"};
+        mAppActivities = new String[] {"Dining","Map", "Events", "People Search", "About"};
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         mDrawerList = (ListView) findViewById(R.id.left_drawer);
 
