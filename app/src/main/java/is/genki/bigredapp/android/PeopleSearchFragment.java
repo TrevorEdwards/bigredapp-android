@@ -1,9 +1,14 @@
 package is.genki.bigredapp.android;
 
 
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.CardView;
+import android.text.Spannable;
+import android.text.SpannableString;
+import android.text.style.ForegroundColorSpan;
+import android.text.style.RelativeSizeSpan;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -94,21 +99,32 @@ public class PeopleSearchFragment extends Fragment {
                                     String netid = typ.text();
                                     int dex = netid.indexOf("NETID");
                                     int dex2 = netid.indexOf("EMAIL");
-                                    String mail = netid.substring(dex2, netid.length());
-                                    netid = netid.substring(dex, dex2);
-                                    String college = emp.text();
-                                    name = name.substring(0, name.length() - 6);
+                                    if(netid.equals(""))
+                                    {
+                                        Toast.makeText(PeopleSearchFragment.this.getActivity(),
+                                                "User does not exist", Toast.LENGTH_SHORT).show();
+                                    }
+                                    else
+                                    {
+                                        String mail = netid.substring(dex2, netid.length());
+                                        netid = netid.substring(dex, dex2);
+                                        String college = emp.text();
+                                        name = name.substring(0, name.length() - 6);
+                                        netid = netid.replace("NETID: ", "");
 
-                                    CardView resultCard= (CardView) inflater.inflate(R.layout.people_result_card/* resource id */, bigContainer, false);
-                                    ((TextView)resultCard.findViewById(R.id.people_result_card_name))
-                                            .setText(name);
-                                    ((TextView)resultCard.findViewById(R.id.people_result_card_college))
-                                            .setText(college.replace("COLLEGE: ", ""));
-                                    ((TextView)resultCard.findViewById(R.id.people_result_card_email))
-                                            .setText(mail.replace("EMAIL: ", ""));
-                                    ((TextView)resultCard.findViewById(R.id.people_result_card_netid))
-                                            .setText(netid.replace("NETID: ", ""));
-                                    bigContainer.addView(resultCard, 1);
+                                        SpannableString spanNameNetid=  new SpannableString(name + " " + netid);
+                                        spanNameNetid.setSpan(new RelativeSizeSpan(1.5f), 0, name.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE); // set size
+
+                                        CardView resultCard= (CardView) inflater.inflate(R.layout.people_result_card/* resource id */, bigContainer, false);
+                                        ((TextView)resultCard.findViewById(R.id.people_result_card_name))
+                                                .setText(spanNameNetid);
+                                        ((TextView)resultCard.findViewById(R.id.people_result_card_college))
+                                                .setText(college.replace("COLLEGE: ", ""));
+                                        ((TextView)resultCard.findViewById(R.id.people_result_card_email))
+                                                .setText(mail.replace("EMAIL: ", ""));
+                                        bigContainer.addView(resultCard, 1);
+                                    }
+
                                 }
                             },
                             new Response.ErrorListener() {

@@ -4,7 +4,7 @@
     xmlns:card_view="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    card_view:cardElevation="4dp"
+    card_view:cardElevation="2dp"
     card_view:cardCornerRadius="2dp"
     android:layout_margin="@dimen/standard_padding">
 
@@ -16,27 +16,14 @@
         android:padding="@dimen/standard_padding"
         >
 
-        <LinearLayout
+        <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:fontFamily="sans-serif-light"
             android:layout_gravity="center"
-            android:orientation="horizontal">
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:fontFamily="sans-serif-light"
-                android:textSize="30sp"
-                android:id = "@+id/people_result_card_name"
-                android:layout_marginRight="@dimen/standard_padding"
-                android:text="Name"/>
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:fontFamily="sans-serif-light"
-                android:textSize="20sp"
-                android:id = "@+id/people_result_card_netid"
-                android:text="Name"/>
-        </LinearLayout>
+            android:textSize="20sp"
+            android:id = "@+id/people_result_card_name"
+            android:text="Super Long Name Netid"/>
 
 
         <LinearLayout
@@ -55,6 +42,7 @@
                 android:id="@+id/people_result_card_email"
                 android:text=".com"
                 android:gravity="right"
+                android:autoLink="email"
                 android:textColor="@color/black"/>
 
         </LinearLayout>

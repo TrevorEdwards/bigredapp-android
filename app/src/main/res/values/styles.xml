@@ -21,7 +21,6 @@
     <style name="ToolbarTheme" parent="ToolbarBase">
     </style>
 
-
     <color name="primary">#ef4035</color>
     <color name="primaryDark">#b31b1b</color>
     <color name="accent">#FFFFFF</color>

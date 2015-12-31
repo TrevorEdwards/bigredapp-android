@@ -11,4 +11,5 @@
     android:text="Sample Text"
     android:drawableLeft="@drawable/ic_placeholder"
     android:drawablePadding="@dimen/standard_padding_16"
+    android:background="?android:attr/activatedBackgroundIndicator"
     />

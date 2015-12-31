@@ -1,7 +1,12 @@
 package is.genki.bigredapp.android;
 
+import android.Manifest;
+import android.app.Activity;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Pair;
 
 import com.android.volley.Request;
@@ -23,14 +28,14 @@ import org.json.JSONObject;
 public class MapFragment extends SupportMapFragment implements OnMapReadyCallback {
 
     public static GoogleMap mMap;
-    private static ActionBarActivity mContext;
+    private static AppCompatActivity mContext;
     private LatLngBounds CORNELL = new LatLngBounds(new LatLng(42.401988, -76.522393), new LatLng(42.501668, -76.432340));
 
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mContext = (ActionBarActivity) getActivity();
+        mContext = (AppCompatActivity) getActivity();
         //setContentView(R.layout.activity_map);
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) mContext.getSupportFragmentManager()
@@ -59,6 +64,16 @@ public class MapFragment extends SupportMapFragment implements OnMapReadyCallbac
         //setup variables we want
         mMap.setBuildingsEnabled(true);
         LatLng mcgraw = new LatLng(42.447587, -76.485013); //centering on mcgraw is very cornell
+        if (ActivityCompat.checkSelfPermission(mContext, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(mContext, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+            return;
+        }
         mMap.setMyLocationEnabled(true); //Show where the user is
 
 

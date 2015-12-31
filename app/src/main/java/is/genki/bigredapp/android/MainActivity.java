@@ -10,6 +10,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
@@ -24,7 +25,7 @@ import com.android.volley.RequestQueue;
 import java.util.logging.Filter;
 
 
-public class MainActivity extends ActionBarActivity  {
+public class MainActivity extends AppCompatActivity {
 
     private String[] mAppActivities;
     private DrawerLayout mDrawerLayout;
@@ -157,13 +158,14 @@ public class MainActivity extends ActionBarActivity  {
 
 
         // Highlight the selected item, update the title, and close the drawer
-//        mDrawerList.setItemChecked(position, true);
-        for(int i = 0; i< mDrawerList.getChildCount(); i++) {
-            if (i == position)
-                mDrawerList.getChildAt(i).setBackgroundColor(getResources().getColor(R.color.list_drawer_highlight));
-            else
-                mDrawerList.getChildAt(i).setBackgroundDrawable(selectableBackgroundDrawable);
-        }
+        mDrawerList.setItemChecked(position, true);
+//        for(int i = 0; i< mDrawerList.getChildCount(); i++) {
+//            if (i == position)
+//                mDrawerList.getChildAt(i).setBackgroundColor(getResources().getColor(R.color.list_drawer_highlight));
+//            else
+//                mDrawerList.getChildAt(i).re
+//                mDrawerList.getChildAt(i).setBackgroundDrawable(selectableBackgroundDrawable);
+//        }
         setTitle(mAppActivities[position]);
         mDrawerLayout.closeDrawer(mDrawerList);
     }
