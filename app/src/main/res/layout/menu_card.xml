@@ -4,8 +4,8 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/menu_card"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    card_view:cardCornerRadius="4dp"
+    android:layout_height="wrap_content"
+    card_view:cardCornerRadius="2dp"
     android:layout_margin="5dp">
 
     <LinearLayout
@@ -19,12 +19,12 @@
             android:layout_height="wrap_content"
             android:text="Meal"
             android:textSize="26sp"
-            android:paddingTop="8dp"
-            android:paddingBottom="8dp"
-            android:paddingLeft="4dp"
-            android:paddingRight="4dp"
-            android:background="@color/primary"
-            android:textColor="@android:color/white"
+            android:paddingTop="@dimen/standard_padding"
+            android:paddingBottom="@dimen/standard_padding"
+            android:paddingLeft="@dimen/standard_padding"
+            android:paddingRight="@dimen/standard_padding"
+            android:background="@drawable/red_meal_background_radius"
+            android:textColor="@color/white"
             android:fontFamily="sans-serif-light"
             />
 
@@ -34,10 +34,10 @@
             android:layout_height="wrap_content"
             android:text="Meal items"
             android:textSize="18sp"
-            android:paddingLeft="8dp"
-            android:paddingRight="8dp"
-            android:paddingTop="8dp"
-            android:paddingBottom="8dp" />
+            android:paddingLeft="@dimen/standard_padding"
+            android:paddingRight="@dimen/standard_padding"
+            android:paddingTop="@dimen/standard_padding"
+            android:paddingBottom="@dimen/standard_padding" />
 
     </LinearLayout>
 </android.support.v7.widget.CardView>

@@ -3,11 +3,14 @@ package is.genki.bigredapp.android;
 import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.TypedArray;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
@@ -22,7 +25,7 @@ import com.android.volley.RequestQueue;
 import java.util.logging.Filter;
 
 
-public class MainActivity extends ActionBarActivity  {
+public class MainActivity extends AppCompatActivity {
 
     private String[] mAppActivities;
     private DrawerLayout mDrawerLayout;
@@ -31,11 +34,14 @@ public class MainActivity extends ActionBarActivity  {
     private ActionBarDrawerToggle mDrawerToggle;
     private int selectedDrawer;
     private static final String SELECTED_STRING = "SELECTED_DRAWER";
+    private Drawable selectableBackgroundDrawable;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        createSelectableBackgroundDrawable();
 
         // See the "SingletonRequestQueue" class. Initializes the RequestQueue
         SingletonRequestQueue.getInstance(this).getRequestQueue();
@@ -132,6 +138,10 @@ public class MainActivity extends ActionBarActivity  {
                 setMapEnabled(false);
                 break;
             case 3:
+                fragment = new PeopleSearchFragment();
+                setMapEnabled(false);
+                break;
+            case 4:
                 fragment = new AboutFragment();
                 setMapEnabled(false);
                 break;
@@ -149,6 +159,13 @@ public class MainActivity extends ActionBarActivity  {
 
         // Highlight the selected item, update the title, and close the drawer
         mDrawerList.setItemChecked(position, true);
+//        for(int i = 0; i< mDrawerList.getChildCount(); i++) {
+//            if (i == position)
+//                mDrawerList.getChildAt(i).setBackgroundColor(getResources().getColor(R.color.list_drawer_highlight));
+//            else
+//                mDrawerList.getChildAt(i).re
+//                mDrawerList.getChildAt(i).setBackgroundDrawable(selectableBackgroundDrawable);
+//        }
         setTitle(mAppActivities[position]);
         mDrawerLayout.closeDrawer(mDrawerList);
     }
@@ -175,7 +192,7 @@ public class MainActivity extends ActionBarActivity  {
      */
     private void setupSliderDrawer(){
 
-        mAppActivities = new String[] {"Dining","Map", "Events","About"};
+        mAppActivities = new String[] {"Dining","Map", "Events", "People Search", "About"};
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         mDrawerList = (ListView) findViewById(R.id.left_drawer);
 
@@ -241,5 +258,26 @@ public class MainActivity extends ActionBarActivity  {
         }
     }
 
+    private void createSelectableBackgroundDrawable()
+    {
+        // Create an array of the attributes we want to resolve
+        // using values from a theme
+        // android.R.attr.selectableItemBackground requires API LEVEL 11
+        int[] attrs = new int[] { android.R.attr.selectableItemBackground /* index 0 */};
+
+        // Obtain the styled attributes. 'themedContext' is a context with a
+        // theme, typically the current Activity (i.e. 'this')
+        TypedArray ta = obtainStyledAttributes(attrs);
+
+        // Now get the value of the 'listItemBackground' attribute that was
+        // set in the theme used in 'themedContext'. The parameter is the index
+        // of the attribute in the 'attrs' array. The returned Drawable
+        // is what you are after
+        selectableBackgroundDrawable = ta.getDrawable(0 /* index */);
+
+        // Finally free resources used by TypedArray
+        ta.recycle();
+
+    }
 
 }
