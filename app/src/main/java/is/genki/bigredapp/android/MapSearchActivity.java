@@ -64,7 +64,7 @@ public class MapSearchActivity extends ListActivity {
             fillMaps.add(map);
         }
 
-        SimpleAdapter adapter = new SimpleAdapter(this, fillMaps, R.layout.search_item, from, to);
+        SimpleAdapter adapter = new SimpleAdapter(this, fillMaps, R.layout.list_item_map_search, from, to);
 
         // Bind to our new adapter.
         setListAdapter(adapter);

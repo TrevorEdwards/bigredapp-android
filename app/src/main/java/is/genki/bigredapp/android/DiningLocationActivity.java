@@ -254,7 +254,7 @@ public class DiningLocationActivity extends ActionBarActivity {
         public MealMenuViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
             View itemView = LayoutInflater.
                 from(parent.getContext()).
-                inflate(R.layout.menu_card, parent, false);
+                inflate(R.layout.card_menu, parent, false);
 
             return new MealMenuViewHolder(itemView);
         }

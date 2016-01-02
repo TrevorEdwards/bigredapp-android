@@ -8,7 +8,6 @@ import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.SearchView;
@@ -19,10 +18,6 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
-
-import com.android.volley.RequestQueue;
-
-import java.util.logging.Filter;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -202,7 +197,7 @@ public class MainActivity extends AppCompatActivity {
 
         // Set the adapter for the list view
         mDrawerList.setAdapter(new ArrayAdapter<String>(this,
-                R.layout.drawer_list_item, mAppActivities));
+                R.layout.list_item_drawer, mAppActivities));
         // Set the list's click listener
         mDrawerList.setOnItemClickListener(new DrawerItemClickListener());
         // Set first item selected and change title

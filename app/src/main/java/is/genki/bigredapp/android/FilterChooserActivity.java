@@ -1,8 +1,6 @@
 package is.genki.bigredapp.android;
 
 import android.app.ListActivity;
-import android.app.SearchManager;
-import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.util.Pair;
 import android.support.v7.app.ActionBarActivity;
@@ -10,7 +8,6 @@ import android.view.View;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
 
-import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
@@ -60,7 +57,7 @@ public class FilterChooserActivity extends ListActivity {
             fillMaps.add(map);
         }
 
-        SimpleAdapter adapter = new SimpleAdapter(this, fillMaps, R.layout.search_item, from, to);
+        SimpleAdapter adapter = new SimpleAdapter(this, fillMaps, R.layout.list_item_map_search, from, to);
 
         // Bind to our new adapter.
         setListAdapter(adapter);

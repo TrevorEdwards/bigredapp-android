@@ -36,7 +36,6 @@ public class MapFragment extends SupportMapFragment implements OnMapReadyCallbac
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mContext = (AppCompatActivity) getActivity();
-        //setContentView(R.layout.activity_map);
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) mContext.getSupportFragmentManager()
                 .findFragmentById(R.id.container);

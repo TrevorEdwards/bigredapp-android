@@ -1,13 +1,11 @@
 package is.genki.bigredapp.android;
 
 
-import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.CardView;
 import android.text.Spannable;
 import android.text.SpannableString;
-import android.text.style.ForegroundColorSpan;
 import android.text.style.RelativeSizeSpan;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -115,7 +113,7 @@ public class PeopleSearchFragment extends Fragment {
                                         SpannableString spanNameNetid=  new SpannableString(name + " " + netid);
                                         spanNameNetid.setSpan(new RelativeSizeSpan(1.5f), 0, name.length(), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE); // set size
 
-                                        CardView resultCard= (CardView) inflater.inflate(R.layout.people_result_card/* resource id */, bigContainer, false);
+                                        CardView resultCard= (CardView) inflater.inflate(R.layout.card_people_result/* resource id */, bigContainer, false);
                                         ((TextView)resultCard.findViewById(R.id.people_result_card_name))
                                                 .setText(spanNameNetid);
                                         ((TextView)resultCard.findViewById(R.id.people_result_card_college))

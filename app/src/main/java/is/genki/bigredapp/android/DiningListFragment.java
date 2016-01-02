@@ -17,7 +17,6 @@ import android.widget.TextView;
 
 import com.android.volley.Request;
 import com.android.volley.Response;
-import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.example.android.swiperefreshlistfragment.SwipeRefreshListFragment;
 
@@ -26,7 +25,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.text.DateFormat;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -204,7 +202,7 @@ public class DiningListFragment extends SwipeRefreshListFragment {
         //Order by what's open
         Collections.sort(nameCalEventLists);
         if (adapter == null) {
-            adapter = new DiningHallListAdapter(mContext, R.layout.dining_list_row, nameCalEventLists);
+            adapter = new DiningHallListAdapter(mContext, R.layout.list_row_dining, nameCalEventLists);
             setListAdapter(adapter);
         } else {
             adapter.clear();
