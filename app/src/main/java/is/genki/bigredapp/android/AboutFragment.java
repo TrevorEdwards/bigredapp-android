@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.method.LinkMovementMethod;
 import android.view.LayoutInflater;
@@ -17,13 +18,13 @@ import android.widget.TextView;
 
 public class AboutFragment extends Fragment {
 
-    private static ActionBarActivity mContext;
+    private static AppCompatActivity mContext;
     private LayoutInflater mInflater;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mContext = (ActionBarActivity) getActivity();
+        mContext = (AppCompatActivity) getActivity();
 
 
     }

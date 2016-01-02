@@ -20,4 +20,9 @@
     <string name="about_open_source_is_great">This app will always be free and open source.</string>
     <string name="title_activity_map_search">MapSearchActivity</string>
     <string name="title_activity_filter_chooser">FilterChooserActivity</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+
+    <string name="fragment_people_search_button">Search</string>
 </resources>
