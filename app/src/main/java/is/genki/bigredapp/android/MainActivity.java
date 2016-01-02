@@ -134,14 +134,18 @@ public class MainActivity extends AppCompatActivity {
                 setMapEnabled(true);
                 break;
             case 2:
-                fragment = new EventListFragment();
+                fragment = new LibraryFragment();
                 setMapEnabled(false);
                 break;
             case 3:
-                fragment = new PeopleSearchFragment();
+                fragment = new EventListFragment();
                 setMapEnabled(false);
                 break;
             case 4:
+                fragment = new PeopleSearchFragment();
+                setMapEnabled(false);
+                break;
+            case 5:
                 fragment = new AboutFragment();
                 setMapEnabled(false);
                 break;
@@ -192,7 +196,7 @@ public class MainActivity extends AppCompatActivity {
      */
     private void setupSliderDrawer(){
 
-        mAppActivities = new String[] {"Dining","Map", "Events", "People Search", "About"};
+        mAppActivities = new String[] {"Dining","Map","Libraries", "Events", "People Search", "About"};
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         mDrawerList = (ListView) findViewById(R.id.left_drawer);
 

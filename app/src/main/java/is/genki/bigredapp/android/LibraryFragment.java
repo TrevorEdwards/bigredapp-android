@@ -1,23 +1,19 @@
 package is.genki.bigredapp.android;
 
 import android.app.Activity;
-import android.app.ListFragment;
-import android.content.Context;
 import android.os.Bundle;
+import android.support.v4.app.ListFragment;
 
 import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.toolbox.JsonObjectRequest;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Iterator;
-import java.util.List;
 
 /**
  * Fragment to show the open status of Cornell's libraries
