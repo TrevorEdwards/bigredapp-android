@@ -16,6 +16,7 @@ import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.toolbox.JsonObjectRequest;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -23,7 +24,6 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Iterator;
-import java.util.TimeZone;
 
 /**
  * Fragment to show the open status of Cornell's libraries
@@ -31,6 +31,8 @@ import java.util.TimeZone;
 public class LibraryFragment extends ListFragment {
 
     public static final String HOURS_URL = "http://mannservices.mannlib.cornell.edu/LibServices/showAllLibraryHoursForAcademicSemester.do?output=json";
+
+    public static final int MILLIS_IN_DAY = 86400000;
 
     private Activity mContext;
 
@@ -44,6 +46,8 @@ public class LibraryFragment extends ListFragment {
 
     }
 
+
+
     // Gets and processes the json object for library hours
     private void fetchLibraryHours(){
         if (SingletonRequestQueue.isConnected(mContext)) {
@@ -53,7 +57,7 @@ public class LibraryFragment extends ListFragment {
                                 @Override
                                 public void onResponse(JSONObject response) {
                                     try {
-                                        ArrayList<HoursObject> allHours = new ArrayList<>();
+                                        ArrayList<HoursObject> allHours = initializeAlwaysOpenLibraries();
                                         Iterator<String> libNames = response.keys();
                                         while (libNames.hasNext()) {
                                             String current = libNames.next();
@@ -79,58 +83,77 @@ public class LibraryFragment extends ListFragment {
      * to a special circumstance.
      */
     private HoursObject grabTodaysHours(JSONObject lib, String name){
-        Iterator<String> it = lib.keys();
-        while (it.hasNext())
-            System.out.println(it.next());
-        System.out.println(lib);
         Long start = null;
         Long end = null;
+        try {
+        JSONObject hoursPackage = lib.getJSONObject("semesterHoursPackage");
 
         //Find out the day of the week and grab the normal hours for that
         Calendar cal = Calendar.getInstance();
         int day = cal.get(Calendar.DAY_OF_WEEK); //Sunday = 1, Sat = 7
-        try {
+
+        //Exceptions are defined in ranges with times for each range.
+        long now = cal.getTimeInMillis();
+            JSONArray exceptions = lib.getJSONArray("exceptionHoursList");
+            for(int i = 0; i < exceptions.length(); i++){
+                JSONObject ex = exceptions.getJSONObject(i);
+                String endDay = ex.getString("endDay");
+                String startDay = ex.getString("startDay");
+                if(!endDay.equals("null") && !startDay.equals(("null"))){
+                    Long endDayLong = Long.parseLong(endDay) * 1000 + MILLIS_IN_DAY; //Their ranges are exclusive
+                    Long startDayLong = Long.parseLong(startDay) * 1000;
+                    if(now >= startDayLong && now <= endDayLong){
+                        //We are in an exception, so we will just parse the custom hours list
+                        hoursPackage = ex.getJSONObject("exceptionHoursPackage");
+                        break;
+                    }
+                }
+            }
+
             String op = "null";
             String cl = "null";
             switch (day) {
                 case 1:
-                    op = lib.getJSONObject("semesterHoursPackage").getString("sunOpen");
-                    cl = lib.getJSONObject("semesterHoursPackage").getString("sunClose");
+                    op = hoursPackage.getString("sunOpen");
+                    cl = hoursPackage.getString("sunClose");
                     break;
                 case 2:
-                    op = lib.getJSONObject("semesterHoursPackage").getString("monOpen");
-                    cl = lib.getJSONObject("semesterHoursPackage").getString("monClose");
+                    op = hoursPackage.getString("monOpen");
+                    cl = hoursPackage.getString("monClose");
                     break;
                 case 3:
-                    op = lib.getJSONObject("semesterHoursPackage").getString("tueOpen");
-                    cl = lib.getJSONObject("semesterHoursPackage").getString("tueClose");
+                    op = hoursPackage.getString("tueOpen");
+                    cl = hoursPackage.getString("tueClose");
                     break;
                 case 4:
-                    op = lib.getJSONObject("semesterHoursPackage").getString("wedOpen");
-                    cl = lib.getJSONObject("semesterHoursPackage").getString("wedClose");
+                    op = hoursPackage.getString("wedOpen");
+                    cl = hoursPackage.getString("wedClose");
                     break;
                 case 5:
-                    op = lib.getJSONObject("semesterHoursPackage").getString("thuOpen");
-                    cl = lib.getJSONObject("semesterHoursPackage").getString("thuClose");
+                    op = hoursPackage.getString("thuOpen");
+                    cl = hoursPackage.getString("thuClose");
                     break;
                 case 6:
-                    op = lib.getJSONObject("semesterHoursPackage").getString("friOpen");
-                    cl = lib.getJSONObject("semesterHoursPackage").getString("friClose");
+                    op = hoursPackage.getString("friOpen");
+                    cl = hoursPackage.getString("friClose");
                     break;
                 case 7:
-                    op = lib.getJSONObject("semesterHoursPackage").getString("satOpen");
-                    cl = lib.getJSONObject("semesterHoursPackage").getString("satClose");
+                    op = hoursPackage.getString("satOpen");
+                    cl = hoursPackage.getString("satClose");
                     break;
             }
             if (! op.equals("null"))
                 start = Long.parseLong(op);
             if (! cl.equals("null"))
                 end = Long.parseLong(cl);
+            if(start != null && end != null && start.equals(end)){
+                start = null;
+                end = null;
+            }
         } catch (JSONException e){
             e.printStackTrace();
         }
 
-        //TODO: Now parse the exception list in case today is different.
 
         return new HoursObject(start,end,name);
     }
@@ -138,7 +161,7 @@ public class LibraryFragment extends ListFragment {
     //Checks to see if a library is currently open based on its hours object
     private boolean isOpen(HoursObject lib){
         long now = Calendar.getInstance().getTimeInMillis();
-        return (lib.closeUnix == null || lib.openUnix * 1000> now || lib.closeUnix * 1000 < now);
+        return (lib.closeUnix == null || lib.openUnix> now || lib.closeUnix < now);
     }
 
     //Holds the open time for a library today
@@ -156,6 +179,7 @@ public class LibraryFragment extends ListFragment {
 
         //Show open libraries, then order alphabetically
         public int compareTo(HoursObject o){
+            if(o == null) return 1;
             if(isOpen(this) && !isOpen(o)) return 1;
             else if(!isOpen(this) && isOpen(o)) return -1;
             return(this.name.compareTo(o.name));
@@ -199,17 +223,11 @@ public class LibraryFragment extends ListFragment {
                 holder.libraryName = hoursObject.name;
             }
 
-//            if (mTextColor == 0) {
-//                mTextColor = holder.hoursTextView.getCurrentTextColor();
-//            }
-
-           // TODO setHoursText(holder.hoursTextView, mRightNowCal, hoursObject.calEventList);
-
             Resources res = mContext.getResources();
             holder.hoursTextView.setTextColor(res.getColor(R.color.closedColor));
             String htext = "closed";
             if (hoursObject.openUnix != null && hoursObject.closeUnix != null) {
-                htext = "Open from " + DateUtils.formatDateRange(mContext, hoursObject.openUnix * 1000, hoursObject.closeUnix * 1000, DateUtils.FORMAT_SHOW_TIME);
+                htext = "open from " + DateUtils.formatDateRange(mContext, hoursObject.openUnix, hoursObject.closeUnix, DateUtils.FORMAT_SHOW_TIME);
                 if (isOpen(hoursObject)) {
                     holder.hoursTextView.setTextColor(res.getColor(R.color.openGreen));
                 } else {
@@ -228,6 +246,36 @@ public class LibraryFragment extends ListFragment {
             TextView hoursTextView;
             String libraryName;
         }
+    }
+
+    //Cornell has 24/7 libraries, so this generates an ArrayList with those
+    private ArrayList<HoursObject> initializeAlwaysOpenLibraries(){
+        ArrayList<HoursObject> hoursObjectArrayList = new ArrayList<>();
+        //Hard coded libraries for now
+        hoursObjectArrayList.add(generateAlwaysOpen("Carpenter Library (24/7)"));
+        hoursObjectArrayList.add(generateAlwaysOpen("Medical Center Archives (24/7)"));
+        hoursObjectArrayList.add(generateAlwaysOpen("Medical Library (24/7)"));
+        hoursObjectArrayList.add(generateAlwaysOpen("Physical Sciences Library (24/7)"));
+
+        return hoursObjectArrayList;
+    }
+
+    //Generates an hours object for a 24/7 library
+    private HoursObject generateAlwaysOpen(String libraryName){
+        //Calculate the milli times for the day's start and end
+        Calendar today = Calendar.getInstance();
+        today.set(Calendar.HOUR_OF_DAY, 0);
+        today.set(Calendar.MINUTE, 0);
+        today.set(Calendar.SECOND, 0);
+        today.set(Calendar.MILLISECOND, 0);
+        Long dayStart = today.getTimeInMillis();
+        today.set(Calendar.HOUR_OF_DAY, 23);
+        today.set(Calendar.MINUTE, 59);
+        today.set(Calendar.SECOND, 59);
+        today.set(Calendar.MILLISECOND, 99);
+        Long dayEnd = today.getTimeInMillis();
+
+        return new HoursObject(dayStart, dayEnd, libraryName);
     }
 
 }
