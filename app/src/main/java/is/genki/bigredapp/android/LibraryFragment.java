@@ -143,9 +143,9 @@ public class LibraryFragment extends ListFragment {
                     break;
             }
             if (! op.equals("null"))
-                start = Long.parseLong(op);
+                start = Long.parseLong(op) * 1000;
             if (! cl.equals("null"))
-                end = Long.parseLong(cl);
+                end = Long.parseLong(cl) * 1000;
             if(start != null && end != null && start.equals(end)){
                 start = null;
                 end = null;
