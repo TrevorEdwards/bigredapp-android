@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.widget.SwipeRefreshLayout;
+import android.text.format.DateUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -295,24 +296,7 @@ public class DiningListFragment extends SwipeRefreshListFragment {
      * @return Returns a human-friendly string of hh:mm am|pm of the given cal
      */
     private static String getTime(Calendar cal) {
-        String minutePad = "";
-        int minute = cal.get(Calendar.MINUTE); // returns [0,59]
-        if (minute < 10) {
-            minutePad += "0";
-        }
-        String ret = cal.get(Calendar.HOUR) + ":" + minutePad + minute + " " +
-                cal.getDisplayName(Calendar.AM_PM, Calendar.SHORT, Locale.US).toLowerCase();
-        switch (ret) {
-            case "0:00 am":
-                return "midnight";
-            case "0:00 pm":
-                return "noon";
-            default:
-                if (ret.charAt(0) == '0') {
-                    ret = "12" + ret.substring(1);
-                }
-                return ret;
-        }
+        return DateUtils.formatDateTime( mContext, cal.getTimeInMillis(), DateUtils.FORMAT_SHOW_TIME);
     }
 
     /**
