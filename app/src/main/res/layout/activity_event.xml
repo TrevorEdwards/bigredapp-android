@@ -52,7 +52,9 @@
             android:id="@+id/description"
             android:layout_gravity="center"
             android:autoLink="web"
-            android:textAlignment="center" />
+            android:textAlignment="center"
+            android:layout_marginLeft="15dp"
+            android:layout_marginRight="15dp" />
 
         <Button
             android:layout_width="150dp"

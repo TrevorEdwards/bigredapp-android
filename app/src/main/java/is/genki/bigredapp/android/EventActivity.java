@@ -31,6 +31,7 @@ import java.util.Date;
 public class EventActivity extends ActionBarActivity {
 
     public static final String KEY_TITLE = "EventActivity.TITLE";
+    public static final String KEY_DATE_STRING = "EventActivity.DATE_STRING";
     public static final String KEY_LINK = "EventActivity.LINK";
     public static final String KEY_MEDIA = "EventActivity.MEDIA";
     public static final String KEY_DESCRIPTION = "EventActivity.DESCRIPTION";
@@ -49,14 +50,9 @@ public class EventActivity extends ActionBarActivity {
         Bundle extras = getIntent().getExtras();
         if (extras != null) {
 
-            //Find and parse title
-            String title = extras.getString(KEY_TITLE);
-            String formatTitle = "";
-            if(title != null) {
-                setTitle(title.substring(0, title.indexOf(":")));
-                formatTitle = title.substring(title.indexOf(":") + 1, title.length()).trim();
-                ((TextView) findViewById(R.id.title)).setText(formatTitle);
-            }
+            setTitle(extras.getString(KEY_DATE_STRING));
+            final String tempTitle = extras.getString(KEY_TITLE);
+            ((TextView) findViewById(R.id.title)).setText(tempTitle);
 
             //Find and sanitize description
             String description = Html.fromHtml(extras.getString(KEY_DESCRIPTION)).toString();
@@ -67,7 +63,6 @@ public class EventActivity extends ActionBarActivity {
             final String lon = extras.getString(KEY_LONGITUDE);
             Button b = (Button) findViewById(R.id.map);
 
-            final String tempTitle = formatTitle;
 
             if(lat != null){
                 b.setOnClickListener(new View.OnClickListener() {

@@ -2,13 +2,17 @@ package is.genki.bigredapp.android;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.res.Resources;
 import android.os.Bundle;
 import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.app.ListFragment;
 import android.util.Xml;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import com.android.volley.Request;
 import com.android.volley.Response;
@@ -22,6 +26,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 /**
@@ -49,10 +54,11 @@ public class EventListFragment extends ListFragment {
 
     @Override
     public void onListItemClick(ListView l, View v, int position, long id) {
-        super.onListItemClick(l, v, position, id); //TODO Refactor to a custom view object that can be passed
+        super.onListItemClick(l, v, position, id);
         EventObj ref = (EventObj) l.getAdapter().getItem(position);
         Intent intent = new Intent(mContext, EventActivity.class);
         intent.putExtra(EventActivity.KEY_TITLE, ref.title);
+        intent.putExtra(EventActivity.KEY_DATE_STRING, ref.dateString);
         intent.putExtra(EventActivity.KEY_LINK, ref.link);
         intent.putExtra(EventActivity.KEY_MEDIA, ref.media);
         intent.putExtra(EventActivity.KEY_DESCRIPTION, ref.description);
@@ -77,10 +83,12 @@ public class EventListFragment extends ListFragment {
                         new Response.Listener<String>() {
                             @Override
                             public void onResponse(String response) {
-                                List cEvents = convertEvents(response);
+                                ArrayList<EventObj> eventArr = new ArrayList<>();
+                                List<EventObj> cEvents = convertEvents(response);
+                                eventArr.addAll(cEvents);
                                 if( cEvents != null){
-                                    ArrayAdapter<EventObj> mAdapter = new ArrayAdapter<EventObj>(mContext, android.R.layout.simple_list_item_1, cEvents);
-                                    setListAdapter(mAdapter);
+                                        ArrayAdapter<EventObj> adapter = new EventListAdapter(mContext, R.layout.list_row_event, eventArr);
+                                    setListAdapter(adapter);
                                 }
                             }
                         }, SingletonRequestQueue.getErrorListener(mContext))
@@ -106,6 +114,7 @@ public class EventListFragment extends ListFragment {
     class EventObj {
 
         String title;
+        String dateString;
         String description;
         String link;
         String date;
@@ -113,8 +122,9 @@ public class EventListFragment extends ListFragment {
         String lat;
         String lon;
 
-        public EventObj(String dt, String ds, String lk, String dat, String med, String lat, String lon){
+        public EventObj(String dt, String dateString,String ds, String lk, String dat, String med, String lat, String lon){
             title = dt;
+            this.dateString = dateString;
             description = ds;
             link = lk;
             date = dat;
@@ -147,7 +157,7 @@ public class EventListFragment extends ListFragment {
         private List readFeed(XmlPullParser parser) throws XmlPullParserException, IOException {
             List<EventObj> entries = new ArrayList<>();
 
-            parser.require(XmlPullParser.START_TAG, null, "rss"); //TODO Convert to align with XML schema
+            parser.require(XmlPullParser.START_TAG, null, "rss");
             parser.next();
             parser.require(XmlPullParser.START_TAG, null, "channel");
 
@@ -169,6 +179,7 @@ public class EventListFragment extends ListFragment {
         private EventObj readEventObj(XmlPullParser parser) throws XmlPullParserException, IOException {
             parser.require(XmlPullParser.START_TAG, null, "item");
             String title = null;
+            String dateString = null;
             String description = null;
             String link = null;
             String date = null;
@@ -183,6 +194,9 @@ public class EventListFragment extends ListFragment {
                 String name = parser.getName();
                 switch(name){
                     case "title":  title = readGeneric(parser,"title");
+                        int subs = title.indexOf(":");
+                        dateString = title.substring(0,subs);
+                        title = title.substring(subs+2,title.length());
                         break;
                     case "description": description = readGeneric(parser,"description");
                         break;
@@ -200,7 +214,7 @@ public class EventListFragment extends ListFragment {
                         break;
                 }
             }
-            return new EventObj(title, description, link, date, media, lat, lon);
+            return new EventObj(title, dateString, description, link, date, media, lat, lon);
         }
 
         private String readGeneric(XmlPullParser parser,String pull) throws IOException, XmlPullParserException {
@@ -242,6 +256,52 @@ public class EventListFragment extends ListFragment {
                         break;
                 }
             }
+        }
+    }
+
+    public class EventListAdapter extends ArrayAdapter<EventObj> {
+
+        final int mResource;
+        final LayoutInflater mInflater;
+        Calendar mRightNowCal;
+
+        public EventListAdapter(Context context, int res, ArrayList<EventObj> items) {
+            super(context, res, items);
+            this.mResource = res;
+            mInflater = LayoutInflater.from(context);
+            mRightNowCal = Calendar.getInstance();
+        }
+
+        @Override
+        public View getView(int position, View convertView, ViewGroup parent) {
+            EventObj eventObject = getItem(position);
+            mRightNowCal = Calendar.getInstance();
+
+            // http://developer.android.com/training/improving-layouts/smooth-scrolling.html#ViewHolder
+            // http://lucasr.org/2012/04/05/performance-tips-for-androids-listview/
+            EventViewHolder holder;
+            if (convertView == null) {
+                convertView = mInflater.inflate(this.mResource, parent, false);
+                holder = new EventViewHolder();
+                holder.nameTextView = (TextView) convertView.findViewById(R.id.event_name);
+                holder.hoursTextView = (TextView) convertView.findViewById(R.id.event_hours);
+                convertView.setTag(holder);
+                holder.eObj = eventObject;
+            } else {
+                holder = (EventViewHolder) convertView.getTag();
+            }
+
+            holder.hoursTextView.setText(eventObject.dateString);
+            holder.nameTextView.setText(eventObject.title);
+
+            return convertView;
+        }
+
+        // http://developer.android.com/training/improving-layouts/smooth-scrolling.html#ViewHolder
+        class EventViewHolder {
+            TextView nameTextView;
+            TextView hoursTextView;
+            EventObj eObj;
         }
     }
 
