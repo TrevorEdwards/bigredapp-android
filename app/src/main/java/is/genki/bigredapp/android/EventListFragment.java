@@ -99,7 +99,7 @@ public class EventListFragment extends ListFragment {
     /**
      * Converts event xml into a usable state
      */
-    private List convertEvents(String xml){
+    private List<EventObj> convertEvents(String xml){
         //See http://developer.android.com/training/basics/network-ops/xml.html
         EventXMLParser exmlp = new EventXMLParser();
         try{
@@ -141,7 +141,7 @@ public class EventListFragment extends ListFragment {
     class EventXMLParser {
         //See http://developer.android.com/training/basics/network-ops/xml.html
 
-        public List parse(String inStr) throws XmlPullParserException, IOException {
+        public List<EventObj> parse(String inStr) throws XmlPullParserException, IOException {
             InputStream in = new ByteArrayInputStream(inStr.getBytes(StandardCharsets.UTF_8));
             try {
                 XmlPullParser parser = Xml.newPullParser();
@@ -154,7 +154,7 @@ public class EventListFragment extends ListFragment {
             }
         }
 
-        private List readFeed(XmlPullParser parser) throws XmlPullParserException, IOException {
+        private List<EventObj> readFeed(XmlPullParser parser) throws XmlPullParserException, IOException {
             List<EventObj> entries = new ArrayList<>();
 
             parser.require(XmlPullParser.START_TAG, null, "rss");

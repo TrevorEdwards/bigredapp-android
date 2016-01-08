@@ -23,7 +23,6 @@ import java.util.Map;
 public class MapSearchActivity extends ListActivity {
 
     private ArrayList<Map.Entry<String,Pair<Double,Double>>> coords;
-    private ActionBarActivity mContext;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {

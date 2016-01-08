@@ -29,7 +29,6 @@ public class MapFragment extends SupportMapFragment implements OnMapReadyCallbac
 
     public static GoogleMap mMap;
     private static AppCompatActivity mContext;
-    private LatLngBounds CORNELL = new LatLngBounds(new LatLng(42.401988, -76.522393), new LatLng(42.501668, -76.432340));
 
 
     @Override

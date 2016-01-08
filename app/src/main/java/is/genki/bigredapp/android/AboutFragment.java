@@ -16,7 +16,6 @@ import android.widget.TextView;
 public class AboutFragment extends Fragment {
 
     private static AppCompatActivity mContext;
-    private LayoutInflater mInflater;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {

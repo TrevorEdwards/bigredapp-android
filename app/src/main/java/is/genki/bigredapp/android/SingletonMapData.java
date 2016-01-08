@@ -28,10 +28,10 @@ public class SingletonMapData {
 
     public void addLocation(String category, String name, double lat, double lon){
         if( mapLocations.containsKey(category)){
-            mapLocations.get(category).put(name, new Pair(lat,lon));
+            mapLocations.get(category).put(name, new Pair<>(lat,lon));
         }else{
             HashMap<String,Pair<Double,Double>> catMap = new HashMap<>();
-            catMap.put(name, new Pair(lat,lon));
+            catMap.put(name, new Pair<>(lat,lon));
             mapLocations.put(category, catMap);
         }
     }

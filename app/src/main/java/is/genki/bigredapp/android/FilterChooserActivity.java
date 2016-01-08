@@ -22,7 +22,6 @@ import java.util.Set;
 
 public class FilterChooserActivity extends ListActivity {
 
-    private ActionBarActivity mContext;
     private ArrayList<String> categories;
 
     @Override

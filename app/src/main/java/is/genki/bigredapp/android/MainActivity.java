@@ -116,7 +116,6 @@ public class MainActivity extends AppCompatActivity {
     /** Swaps fragments in the main content view */
     private void selectItem(int position) {
         Fragment fragment;
-        Class act = null;
         selectedDrawer = position;
         // Create a new fragment or activity based on what we selected
         switch (position) {
@@ -196,7 +195,7 @@ public class MainActivity extends AppCompatActivity {
         mDrawerList = (ListView) findViewById(R.id.left_drawer);
 
         // Set the adapter for the list view
-        mDrawerList.setAdapter(new ArrayAdapter<String>(this,
+        mDrawerList.setAdapter(new ArrayAdapter<>(this,
                 R.layout.list_item_drawer, mAppActivities));
         // Set the list's click listener
         mDrawerList.setOnItemClickListener(new DrawerItemClickListener());
