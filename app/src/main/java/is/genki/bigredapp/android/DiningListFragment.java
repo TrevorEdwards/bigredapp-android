@@ -5,6 +5,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityOptionsCompat;
@@ -70,14 +71,14 @@ public class DiningListFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_dining_now, container, false);
 
         WebView myWebView = (WebView) view.findViewById(R.id.webview);
-        myWebView.setWebViewClient(new WebViewClient());
+        myWebView.setWebViewClient(new MyWebViewClient());
         myWebView.loadUrl(DINING_URL);
         WebSettings webSettings = myWebView.getSettings();
         webSettings.setJavaScriptEnabled(true);
 
         new AlertDialog.Builder(mContext)
                 .setTitle("Notice")
-                .setMessage("This app is not in anyway affiliated with Cornell University or Cornell Dining.  Please check Cornell's website for the most accurate information.")
+                .setMessage("This app is not in any way affiliated with Cornell University or Cornell Dining.  Please check cornell.edu for the most accurate information.  See the about tab for any feedback about this app.")
                 .setNeutralButton(android.R.string.ok, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
                     }
@@ -86,6 +87,21 @@ public class DiningListFragment extends Fragment {
                 .show();
 
         return view;
+    }
+
+    private class MyWebViewClient extends WebViewClient {
+        @Override
+        public boolean shouldOverrideUrlLoading(WebView view, String url) {
+            if (Uri.parse(url).getHost().equals("now.dining.cornell.edu")) {
+                //Allow the URL to load
+                return false;
+            }
+            System.out.println(Uri.parse(url).getHost());
+            // Otherwise, the link is not for a page on my site, so launch another Activity that handles URLs
+           // Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+           // startActivity(intent);
+            return true;
+        }
     }
 
 }

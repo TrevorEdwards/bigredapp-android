@@ -2,9 +2,11 @@ package is.genki.bigredapp.android;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.res.Resources;
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
+import android.support.v7.app.AlertDialog;
 import android.text.format.DateUtils;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -43,6 +45,16 @@ public class LibraryFragment extends ListFragment {
         mContext = getActivity();
 
         fetchLibraryHours();
+
+        new AlertDialog.Builder(mContext)
+                .setTitle("Notice")
+                .setMessage("This feature is new and still experimental.  Please check www.library.cornell.edu/libraries for the most accurate information.")
+                .setNeutralButton(android.R.string.ok, new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                    }
+                })
+                .setIcon(android.R.drawable.ic_dialog_alert)
+                .show();
 
     }
 
