@@ -45,7 +45,7 @@ public class MainActivity extends AppCompatActivity {
 
         if (savedInstanceState == null) {
             getSupportFragmentManager().beginTransaction()
-                    .add(R.id.container, new DiningListFragment())
+                    .add(R.id.container, new DiningNowFragment())
                     .commit();
         } else {
             selectedDrawer = savedInstanceState.getInt(SELECTED_STRING,-1);
@@ -53,7 +53,7 @@ public class MainActivity extends AppCompatActivity {
                 selectItem(selectedDrawer); //Just set view to dining halls
             } else{
                 getSupportFragmentManager().beginTransaction()
-                        .add(R.id.container, new DiningListFragment())
+                        .add(R.id.container, new DiningNowFragment())
                         .commit();
                 selectItem(0); //Just set view to dining halls
             }
@@ -120,7 +120,7 @@ public class MainActivity extends AppCompatActivity {
         // Create a new fragment or activity based on what we selected
         switch (position) {
             case 0:
-                fragment = new DiningListFragment();
+                fragment = new DiningNowFragment();
                 setMapEnabled(false);
                 break;
             case 1:
@@ -144,7 +144,7 @@ public class MainActivity extends AppCompatActivity {
                 setMapEnabled(false);
                 break;
             default:
-                fragment = new DiningListFragment();
+                fragment = new DiningNowFragment();
         }
             Bundle args = new Bundle();
             fragment.setArguments(args);

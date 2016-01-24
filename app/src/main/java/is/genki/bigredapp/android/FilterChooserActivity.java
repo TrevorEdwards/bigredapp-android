@@ -3,7 +3,6 @@ package is.genki.bigredapp.android;
 import android.app.ListActivity;
 import android.os.Bundle;
 import android.support.v4.util.Pair;
-import android.support.v7.app.ActionBarActivity;
 import android.view.View;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
