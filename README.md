@@ -5,13 +5,13 @@
 
 ## What
 This is a native android application for Cornell students.  Right now, you can use the app to:
-* See what dining halls are open and what they are serving
+* See what dining halls/cafes are open and what they are serving
 * Navigate Cornell's buildings, bus stops, and bike racks
 * See what libraries are open
 * Discover events around campus
 * Lookup people by net ID
 
-We are using [Kevin Chavez](https://github.com/mrkev)'s API [here](http://redapi-tious.rhcloud.com/).
+We are using [Kevin Chavez](https://github.com/mrkev)'s API [here](http://redapi-tious.rhcloud.com/)  (currently disabled).
 We also use the Cornell Open Data Initiative API [here](https://cornelldata.org/).
 
 ## Objectives
@@ -33,11 +33,9 @@ We also use the Cornell Open Data Initiative API [here](https://cornelldata.org/
 * Hopefully you find the comments within the code itself helpful (if not, add an Issue about it!), but for a birds-eye view of how it all works:
 * The relevant files are in [`app/src/main`](https://github.com/genkimarshall/bigredapp-android/tree/master/app/src/main).
 * Find the activities inside [here](https://github.com/genkimarshall/bigredapp-android/tree/master/app/src/main/java/is/genki/bigredapp/android).
-* `MainActivity.java` simply kicks off the `DiningListFragment.java` fragment, which displays a list of dining halls, along with some small text below it of its open status.
-  * The fragment implements `SwipeRefreshListFragment.java`, more details can be found in the Java doc inside.
-* Tapping on a row takes one to`DiningLocationActivity.java`, which displays details for the location (currently, just its menu).
+* `MainActivity.java` simply kicks off the `DiningNowFragment.java` fragment, which displays a webview of now.dining.cornell.edu.
 * `AboutFragment.java` is a simple fragment to display meta-details about the app.
-* All tabs within the navigation drawer are implemented as fragments, and follow a structure similar to that of DiningListFragment.
+* All tabs within the navigation drawer are implemented as fragments, and follow a structure similar to that of DiningNowFragment.
 * All GET requests are done through `SingletonRequestQueue.java`. It works using a [`RequestQueue`](https://developer.android.com/training/volley/requestqueue.html). The basic idea is that at the very start (in `MainActivity.java`), a `RequestQueue` is started and stays around for the lifetime of the app. So, any time in the app process you can simply access it to add a request on to the queue.
 
 ## Up and Running
