@@ -13,6 +13,7 @@ import android.view.ViewGroup;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.widget.Toast;
 
 /**
  * Fragment containing a WebView of Cornell's Dining Now site
@@ -45,15 +46,7 @@ public class DiningNowFragment extends Fragment {
         WebSettings webSettings = myWebView.getSettings();
         webSettings.setJavaScriptEnabled(true);
 
-        new AlertDialog.Builder(mContext)
-                .setTitle("Notice")
-                .setMessage("This app is not in any way affiliated with Cornell University or Cornell Dining.  Please check cornell.edu for the most accurate information.  See the about tab for any feedback about this app.")
-                .setNeutralButton(android.R.string.ok, new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                    }
-                })
-                .setIcon(android.R.drawable.ic_dialog_alert)
-                .show();
+        Toast.makeText(mContext, "This app is not in any way affiliated with Cornell University or Cornell Dining.  See cornell.edu for the most accurate info.  See the about tab for any feedback about this app.", Toast.LENGTH_LONG).show();
 
         return view;
     }

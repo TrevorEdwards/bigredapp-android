@@ -12,6 +12,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.android.volley.Request;
 import com.android.volley.Response;
@@ -42,16 +43,7 @@ public class LibraryFragment extends ListFragment {
 
         fetchLibraryHours();
 
-        new AlertDialog.Builder(mContext)
-                .setTitle("Notice")
-                .setMessage("This feature is new and still experimental.  Please check www.library.cornell.edu/libraries for the most accurate information.")
-                .setNeutralButton(android.R.string.ok, new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                    }
-                })
-                .setIcon(android.R.drawable.ic_dialog_alert)
-                .show();
-
+        Toast.makeText(mContext, "This feature is new.  See library.cornell.edu/libraries for the most accurate info.", Toast.LENGTH_SHORT).show();
     }
 
 
