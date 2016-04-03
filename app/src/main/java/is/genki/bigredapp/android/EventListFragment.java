@@ -32,7 +32,7 @@ public class EventListFragment extends ListFragment {
 
     private static Context mContext;
     public static final String REQUEST_STRING = "http://redevents-trevtrev.rhcloud.com/events";
-    public static final long EVENT_DAY_NUMBER = 8; //We only care about events for the next 8 days
+    public static final long EVENT_DAY_NUMBER = 7; //We only care about events for the next 7 days
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
