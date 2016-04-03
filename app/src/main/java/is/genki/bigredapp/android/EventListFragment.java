@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.app.ListFragment;
-import android.util.Xml;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,27 +14,24 @@ import android.widget.TextView;
 
 import com.android.volley.Request;
 import com.android.volley.Response;
-import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.JsonArrayRequest;
 
-import org.xmlpull.v1.XmlPullParser;
-import org.xmlpull.v1.XmlPullParserException;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
 /**
  * Shows a list of events from Cornell's event data
- * Created by Trevor Edwards on 12/20/2015.
  */
 public class EventListFragment extends ListFragment {
 
     private static Context mContext;
-    public static final String REQUEST_STRING = "http://events.cornell.edu/calendar.xml";
+    public static final String REQUEST_STRING = "http://redevents-trevtrev.rhcloud.com/events";
+    public static final long EVENT_DAY_NUMBER = 8; //We only care about events for the next 8 days
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -77,37 +73,64 @@ public class EventListFragment extends ListFragment {
     private void populateEvents(){
         //Fetch data from the website
         // See the "SingletonRequestQueue" Class
-        StringRequest stringRequest = (StringRequest)
-                new StringRequest(Request.Method.GET, REQUEST_STRING,
-                        new Response.Listener<String>() {
+        String request = REQUEST_STRING + "/" + (Calendar.getInstance().getTimeInMillis() +  (EVENT_DAY_NUMBER * 24 * 60 * 60 * 1000));
+        JsonArrayRequest jArrRequest =  (JsonArrayRequest)
+                new JsonArrayRequest(Request.Method.GET, request,
+                        new Response.Listener<JSONArray>() {
                             @Override
-                            public void onResponse(String response) {
+                            public void onResponse(JSONArray response) {
                                 ArrayList<EventObj> eventArr = new ArrayList<>();
                                 List<EventObj> cEvents = convertEvents(response);
                                 eventArr.addAll(cEvents);
                                 if( cEvents != null){
-                                        ArrayAdapter<EventObj> adapter = new EventListAdapter(mContext, R.layout.list_row_event, eventArr);
+                                    ArrayAdapter<EventObj> adapter = new EventListAdapter(mContext, R.layout.list_row_event, eventArr);
                                     setListAdapter(adapter);
                                 }
                             }
                         }, SingletonRequestQueue.getErrorListener(mContext))
                         .setRetryPolicy(SingletonRequestQueue.getRetryPolicy());
-        SingletonRequestQueue.getInstance(mContext).addToRequestQueue(stringRequest);
+        SingletonRequestQueue.getInstance(mContext).addToRequestQueue(jArrRequest);
     }
 
     /**
      * Converts event xml into a usable state
      */
-    private List<EventObj> convertEvents(String xml){
-        //See http://developer.android.com/training/basics/network-ops/xml.html
-        EventXMLParser exmlp = new EventXMLParser();
-        try{
-            return exmlp.parse(xml);
+    private List<EventObj> convertEvents(JSONArray eventsArray){
+        int length = eventsArray.length();
+        ArrayList<EventObj> ret = new ArrayList<>();
+
+        for(int i = 0; i < length; i++){
+            try {
+                JSONObject jObj = eventsArray.getJSONObject(i);
+                String lat = null;
+                String lon = null;
+
+                try {
+                    lat = jObj.getString("geo:lat");
+                    lon = jObj.getString("geo:long");
+                }
+                catch(JSONException e){
+                    //Do nothing, we can still use the data
+                }
+
+                EventObj obj = new EventObj(
+                        jObj.getString("title"),
+                        jObj.getString("readableDate"),
+                        jObj.getString("description"),
+                        jObj.getString("link"),
+                        jObj.getString("uniDate"),
+                        jObj.getString("media:content"),
+                        lat,
+                        lon
+                );
+                ret.add(obj);
+            }
+            catch(JSONException e){
+                continue;
+            }
         }
-        catch( Exception e){
-            e.printStackTrace();
-            return null;
-        }
+
+        return ret;
     }
 
     class EventObj {
@@ -121,7 +144,14 @@ public class EventListFragment extends ListFragment {
         String lat;
         String lon;
 
-        public EventObj(String dt, String dateString,String ds, String lk, String dat, String med, String lat, String lon){
+        public EventObj(String dt,
+                        String dateString,
+                        String ds,
+                        String lk,
+                        String dat,
+                        String med,
+                        String lat,
+                        String lon){
             title = dt;
             this.dateString = dateString;
             description = ds;
@@ -137,126 +167,6 @@ public class EventListFragment extends ListFragment {
         }
     }
 
-    class EventXMLParser {
-        //See http://developer.android.com/training/basics/network-ops/xml.html
-
-        public List<EventObj> parse(String inStr) throws XmlPullParserException, IOException {
-            InputStream in = new ByteArrayInputStream(inStr.getBytes(StandardCharsets.UTF_8));
-            try {
-                XmlPullParser parser = Xml.newPullParser();
-                parser.setFeature(XmlPullParser.FEATURE_PROCESS_NAMESPACES, false);
-                parser.setInput(in, null);
-                parser.nextTag();
-                return readFeed(parser);
-            } finally {
-                in.close();
-            }
-        }
-
-        private List<EventObj> readFeed(XmlPullParser parser) throws XmlPullParserException, IOException {
-            List<EventObj> entries = new ArrayList<>();
-
-            parser.require(XmlPullParser.START_TAG, null, "rss");
-            parser.next();
-            parser.require(XmlPullParser.START_TAG, null, "channel");
-
-            while (parser.next() != XmlPullParser.END_TAG) {
-                if (parser.getEventType() != XmlPullParser.START_TAG) {
-                    continue;
-                }
-                String name = parser.getName();
-                // Starts by looking for the entry tag
-                if (name.equals("item")) {
-                    entries.add(readEventObj(parser));
-                } else {
-                    skip(parser);
-                }
-            }
-            return entries;
-        }
-
-        private EventObj readEventObj(XmlPullParser parser) throws XmlPullParserException, IOException {
-            parser.require(XmlPullParser.START_TAG, null, "item");
-            String title = null;
-            String dateString = null;
-            String description = null;
-            String link = null;
-            String date = null;
-            String media = null;
-            String lat = null;
-            String lon = null;
-
-            while (parser.next() != XmlPullParser.END_TAG) {
-                if (parser.getEventType() != XmlPullParser.START_TAG) {
-                    continue;
-                }
-                String name = parser.getName();
-                switch(name){
-                    case "title":  title = readGeneric(parser,"title");
-                        int subs = title.indexOf(":");
-                        dateString = title.substring(0,subs);
-                        title = title.substring(subs+2,title.length());
-                        break;
-                    case "description": description = readGeneric(parser,"description");
-                        break;
-                    case "link":  link = readGeneric(parser,"link");
-                        break;
-                    case "dc:date":  date = readGeneric(parser, "dc:date");
-                        break;
-                    case "geo:lat":  lat = readGeneric(parser, "geo:lat");
-                        break;
-                    case "geo:long":  lon = readGeneric(parser, "geo:long");
-                        break;
-                    case "media:content": media = readMedia(parser);
-                        break;
-                    default: skip(parser);
-                        break;
-                }
-            }
-            return new EventObj(title, dateString, description, link, date, media, lat, lon);
-        }
-
-        private String readGeneric(XmlPullParser parser,String pull) throws IOException, XmlPullParserException {
-            parser.require(XmlPullParser.START_TAG, null, pull);
-            String title = readText(parser);
-            parser.require(XmlPullParser.END_TAG, null, pull);
-            return title;
-        }
-
-        private String readText(XmlPullParser parser) throws IOException, XmlPullParserException {
-            String result = "";
-            if (parser.next() == XmlPullParser.TEXT) {
-                result = parser.getText();
-                parser.nextTag();
-            }
-            return result;
-        }
-
-        private String readMedia(XmlPullParser parser) throws IOException, XmlPullParserException {
-            parser.require(XmlPullParser.START_TAG, null, "media:content");
-            String result = parser.getAttributeValue(1);
-            parser.next();
-            parser.require(XmlPullParser.END_TAG, null, "media:content");
-            return result;
-        }
-
-        private void skip(XmlPullParser parser) throws XmlPullParserException, IOException {
-            if (parser.getEventType() != XmlPullParser.START_TAG) {
-                throw new IllegalStateException();
-            }
-            int depth = 1;
-            while (depth != 0) {
-                switch (parser.next()) {
-                    case XmlPullParser.END_TAG:
-                        depth--;
-                        break;
-                    case XmlPullParser.START_TAG:
-                        depth++;
-                        break;
-                }
-            }
-        }
-    }
 
     public class EventListAdapter extends ArrayAdapter<EventObj> {
 

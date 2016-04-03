@@ -93,17 +93,7 @@ public class EventActivity extends ActionBarActivity {
 
             //Date formatting
             //Sample date:  2015-12-25T00:00:00-05:00
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ssZ");
-            long timeInMilliseconds = 0;
-            try {
-                String date = extras.getString(KEY_DATE);
-                if(date != null) {
-                    Date mDate = sdf.parse(date.replace("T", " "));
-                    timeInMilliseconds = mDate.getTime();
-                }
-            } catch (ParseException e) {
-                e.printStackTrace();
-            }
+            long timeInMilliseconds = Long.parseLong(extras.getString(KEY_DATE));
            String readableDate =
                    DateUtils.getRelativeTimeSpanString(
                             timeInMilliseconds,
