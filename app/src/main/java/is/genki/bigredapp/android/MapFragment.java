@@ -26,6 +26,10 @@ public class MapFragment extends SupportMapFragment implements OnMapReadyCallbac
     public static GoogleMap mMap;
     private static AppCompatActivity mContext;
 
+    public static final String BUILDING_SOURCE = "http://redevents-trevtrev.rhcloud.com/maps/buildings";
+    public static final String BIKE_SOURCE = "http://redevents-trevtrev.rhcloud.com/maps/bikeracks";
+    public static final String BUS_STOP_SOURCE = "http://redevents-trevtrev.rhcloud.com/maps/stops";
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -81,9 +85,9 @@ public class MapFragment extends SupportMapFragment implements OnMapReadyCallbac
     private void getMapData() {
         if (SingletonRequestQueue.isConnected(mContext)) {
             final Pair<String, String>[] urls = new Pair[]{
-                    new Pair<String, String>("Buildings", "https://cornelldata.org/api/v0/map-data/buildings"),
-                    new Pair<String, String>("Bike Racks", "https://cornelldata.org/api/v0/map-data/bikeracks"),
-                    new Pair<String, String>("Bus Stops", "https://cornelldata.org/api/v0/TCAT-data/stop-locations")
+                    new Pair<String, String>("Buildings", BUILDING_SOURCE),
+                    new Pair<String, String>("Bike Racks", BIKE_SOURCE),
+                    new Pair<String, String>("Bus Stops", BUS_STOP_SOURCE)
             };
 
             for (final Pair<String, String> sp : urls) {
