@@ -6,3 +6,5 @@
 /build
 .idea/*
 *.iml
+projectFilesBackup/
+*.apk

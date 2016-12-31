@@ -31,7 +31,7 @@ import java.util.List;
 public class EventListFragment extends ListFragment {
 
     private static Context mContext;
-    public static final String REQUEST_STRING = "http://redevents-trevtrev.rhcloud.com/events";
+    public static final String REQUEST_STRING = "https://redevents.herokuapp.com/events";
     public static final long EVENT_DAY_NUMBER = 7; //We only care about events for the next 7 days
 
     @Override
@@ -107,8 +107,8 @@ public class EventListFragment extends ListFragment {
                 String lon = null;
 
                 try {
-                    lat = jObj.getString("geo:lat");
-                    lon = jObj.getString("geo:long");
+                    lat = jObj.getString("geoLat");
+                    lon = jObj.getString("geoLon");
                 }
                 catch(JSONException e){
                     //Do nothing, we can still use the data
@@ -119,8 +119,8 @@ public class EventListFragment extends ListFragment {
                         jObj.getString("readableDate"),
                         jObj.getString("description"),
                         jObj.getString("link"),
-                        jObj.getString("uniDate"),
-                        jObj.getString("media:content"),
+                        jObj.getString("startTime"),
+                        jObj.getString("mediaURL"),
                         lat,
                         lon
                 );
@@ -153,12 +153,12 @@ public class EventListFragment extends ListFragment {
                         String med,
                         String lat,
                         String lon){
-            title = dt;
+            this.title = dt;
             this.dateString = dateString;
-            description = ds;
-            link = lk;
-            date = dat;
-            media = med;
+            this.description = ds;
+            this.link = lk;
+            this.date = dat;
+            this.media = med;
             this.lat = lat;
             this.lon = lon;
         }

@@ -31,7 +31,7 @@ import java.util.Iterator;
  */
 public class LibraryFragment extends ListFragment {
 
-    public static final String HOURS_URL = "http://redevents-trevtrev.rhcloud.com/libraries";
+    public static final String HOURS_URL = "https://redevents.herokuapp.com/libraries";
 
     private Activity mContext;
 

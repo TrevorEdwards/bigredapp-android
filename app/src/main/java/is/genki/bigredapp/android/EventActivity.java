@@ -21,9 +21,11 @@ import android.widget.TextView;
 
 import java.io.InputStream;
 import java.net.URL;
+import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.TimeZone;
 
 /**
  * Shows information for a specific event
@@ -92,9 +94,16 @@ public class EventActivity extends ActionBarActivity {
                 });
 
             //Date formatting
-            //Sample date:  2015-12-25T00:00:00-05:00
-            long timeInMilliseconds = Long.parseLong(extras.getString(KEY_DATE));
-           String readableDate =
+            //Sample date:  2016-12-31T00:00:00.000Z
+            DateFormat formatter = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+            formatter.setTimeZone(TimeZone.getTimeZone("EDT"));
+            long timeInMilliseconds = 0;
+            try {
+                timeInMilliseconds = formatter.parse(extras.getString(KEY_DATE)).getTime();
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
+            String readableDate =
                    DateUtils.getRelativeTimeSpanString(
                             timeInMilliseconds,
                             System.currentTimeMillis(),

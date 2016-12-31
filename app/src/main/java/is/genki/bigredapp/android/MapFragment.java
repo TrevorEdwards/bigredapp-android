@@ -26,9 +26,9 @@ public class MapFragment extends SupportMapFragment implements OnMapReadyCallbac
     public static GoogleMap mMap;
     private static AppCompatActivity mContext;
 
-    public static final String BUILDING_SOURCE = "http://redevents-trevtrev.rhcloud.com/maps/buildings";
-    public static final String BIKE_SOURCE = "http://redevents-trevtrev.rhcloud.com/maps/bikeracks";
-    public static final String BUS_STOP_SOURCE = "http://redevents-trevtrev.rhcloud.com/maps/stops";
+    public static final String BUILDING_SOURCE = "https://redevents.herokuapp.com/maps/buildings";
+    public static final String BIKE_SOURCE = "https://redevents.herokuapp.com/maps/bikeracks";
+    public static final String BUS_STOP_SOURCE = "https://redevents.herokuapp.com/maps/stops";
 
 
     @Override
