@@ -11,21 +11,21 @@ This is a native android application for Cornell students.  Right now, you can u
 * Discover events around campus
 * Lookup people by net ID
 
-We are using [Kevin Chavez](https://github.com/mrkev)'s API [here](http://redapi-tious.rhcloud.com/)  (currently disabled).
-We also use the Cornell Open Data Initiative API [here](https://cornelldata.org/).
+### APIs
+We currently use the [RedEvents API](https://github.com/TrevorEdwards/RedEvents).
+
+We also previously used the following APIs:
+[Kevin Chavez](https://github.com/mrkev)'s  [API](http://redapi-tious.rhcloud.com/).
+Cornell Open Data Initiative [API](https://cornelldata.org/).
 
 ## Objectives
 * 100% free as in beer (no monetization) and free as in speech (open source).
 * App: native Android, easy to use, good looking, minimal, clean.
 * Code: well-commented, easy to maintain.
 
-## iOS?
-* The iOS by Matthew Gharrity has halted development, but you can check it out [here](https://github.com/gharrma/bigredapp-ios). 
-
-
 ## Contributing
 * [Pull requests](http://git-scm.com/book/en/v2/GitHub-Contributing-to-a-Project) are very welcome!
-* See the [issues page](https://github.com/genkimarshall/bigredapp-android/issues).
+* See the [issues page](https://github.com/TrevorEdwards/bigredapp-android/issues).
 * Please post any issues for any questions / bug reports / ideas / etc. you have!
 * If you are a beginner, please do not hesitate, as I am learning Android dev right now too.
 
@@ -44,9 +44,19 @@ We also use the Cornell Open Data Initiative API [here](https://cornelldata.org/
 3. Open AS, click "Open an existing Android Studio project"
 4. Navigate to where you cloned this repository (it should have a special icon by it in the file browser)
 5. Click Ok
+6. Under app/src/main/res/values, create a file private_keys.xml and copy and paste the below, filling in your relevant key:
+```
+<resources>
+    <!-- Google Maps API Key -->
+    <string name="google_maps_key" translatable="false" templateMergeStrategy="preserve">
+        YOUR_KEY_HERE
+    </string>
+</resources>
+```
 
 ## OpenSourceCornell Club
-* freenode IRC: #opensourcecornell
+* [Website](http://orgsync.rso.cornell.edu/org/opensourcecornell)
 * [Facebook Group](https://www.facebook.com/groups/opensourcecornell)
 * [Slack chat](https://opensourcecornell.slack.com/signup)
+* freenode IRC: #opensourcecornell
 
