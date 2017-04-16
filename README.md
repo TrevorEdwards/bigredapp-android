@@ -54,6 +54,8 @@ Cornell Open Data Initiative [API](https://cornelldata.org/).
 </resources>
 ```
 
+If you do not have a key, see: https://developers.google.com/maps/documentation/android-api/?hl=en_US 
+
 ## OpenSourceCornell Club
 * [Website](http://orgsync.rso.cornell.edu/org/opensourcecornell)
 * [Facebook Group](https://www.facebook.com/groups/opensourcecornell)
