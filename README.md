@@ -1,5 +1,14 @@
 # Big Red App for Android
 
+## Big Red App is GOING AWAY?
+
+Big Red App will most likely be taken down from the Google Play Store around Summer 2018 or sooner. It has been a long time since it has been updated, and its last maintainer has not had it installed in a long time, nor does he go to Cornell anymore. At the time this notice is being written, the app is installed on 450 active devices. Installs spike up dramatically at the start of every semester, so for those who are sad about it disappearing, I suggest any of the following:
+
+1. https://now.dining.cornell.edu/ - This is what 99% of users use the app for. You can just bookmark it onto your home screen. Maybe rename the shortcut to "Big Red App" for nostalgia.
+1. Google Maps apparently knows TCAT schedules now, which was a long-term goal for the app.
+1. Make an issue on this repo if you want to discuss it?
+1. Fork the repo and make your own cooler app (mind the license on the repo though).
+
 ## Download?
 * Download it from the Play Store [here](https://play.google.com/store/apps/details?id=is.genki.bigredapp.android)!
 
